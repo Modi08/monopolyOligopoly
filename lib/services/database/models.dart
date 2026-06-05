@@ -44,7 +44,9 @@ class Player {
       'jailTurns': jailTurns,
       'activeLoans': isDatabase ? activeLoans.toString() : activeLoans,
       'playerTurn': playerTurn,
-      'isCurrentPlayer': isDatabase ? isCurrentPlayer.toString() : isCurrentPlayer,
+      'isCurrentPlayer': isDatabase
+          ? isCurrentPlayer.toString()
+          : isCurrentPlayer,
     };
   }
 
@@ -61,13 +63,17 @@ class Player {
           ? jsonDecode(map['propertiesVotershare']) as Map<String, dynamic>
           : map['propertiesVotershare'] as Map<String, dynamic>,
       position: map['position'] as int,
-      inJail: isDatabase ? (map['inJail'] == true) : map['inJail'] as bool,
+      inJail: isDatabase
+          ? (map['inJail'] == true.toString())
+          : map['inJail'] as bool,
       jailTurns: map['jailTurns'] as int,
       activeLoans: isDatabase
           ? jsonDecode(map['activeLoans']) as Map<String, dynamic>
           : map['activeLoans'] as Map<String, dynamic>,
       playerTurn: map['playerTurn'] as int,
-      isCurrentPlayer: isDatabase ? (map['isCurrentPlayer'] == true) : map['isCurrentPlayer'] as bool,
+      isCurrentPlayer: isDatabase
+          ? (map['isCurrentPlayer'] == true.toString())
+          : map['isCurrentPlayer'] as bool,
     );
   }
 }

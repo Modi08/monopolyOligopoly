@@ -3,7 +3,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import '../services/snackbar.dart';
 import '../services/database/models.dart';
 import 'dart:convert';
-import '../services/database/database_helper.dart';
+import '../services/database/database_service.dart';
 
 Widget _buildTextField({
   required TextEditingController controller,
@@ -33,7 +33,7 @@ Future<void> joinGame(
   String username,
   FirebaseFunctions functions,
   context,
-  DatabaseHelper database,
+  DatabaseServicePlayer database,
 ) async {
   try {
     final callable = functions.httpsCallable('joinGameFunction');
@@ -83,7 +83,7 @@ Future<void> createGame(
   String username,
   FirebaseFunctions functions,
   context,
-  DatabaseHelper database,
+  DatabaseServicePlayer database,
 ) async {
   try {
     final callable = functions.httpsCallable('createGameFunction');
@@ -120,7 +120,7 @@ Future<void> createGame(
 class JoinScreen extends StatefulWidget {
   final double width;
   final double height;
-  final DatabaseHelper database;
+  final DatabaseServicePlayer database;
   const JoinScreen({
     super.key,
     required this.width,

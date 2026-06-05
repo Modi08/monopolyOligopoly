@@ -5,7 +5,7 @@ import 'pages/join_game_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
 import 'firebase_options.dart';
-import 'services/database/database_helper.dart';
+import 'services/database/database_service.dart';
 import 'pages/waiting_page.dart';
 
 void main() async {
@@ -31,7 +31,8 @@ class Oligarch extends StatefulWidget {
 }
 
 class _OligarchState extends State<Oligarch> {
-  final DatabaseHelper database = DatabaseHelper.instance;
+  final DatabaseServicePlayer database = DatabaseServicePlayer.instance;
+  final int gameIds = 0;
 
   @override
   void initState() {

@@ -92,7 +92,7 @@ def create_game(req: https_fn.CallableRequest) -> dict:
     gameIds.sort()
 
     newGameId = gameIds[-1] + 1 if len(gameIds) > 0 else 1
-    docRef = db.collection(newGameId).document("players")
+    docRef = db.collection(str(newGameId)).document("players")
 
     docRef.set(
         {

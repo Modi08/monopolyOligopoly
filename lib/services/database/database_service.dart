@@ -2,17 +2,17 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'models.dart';
 
-class DatabaseHelper {
+class DatabaseServicePlayer {
   // 1. Create the Singleton instance
-  static final DatabaseHelper instance = DatabaseHelper._init();
+  static final DatabaseServicePlayer instance = DatabaseServicePlayer._init();
   static Database? _database;
 
-  DatabaseHelper._init();
+  DatabaseServicePlayer._init();
 
   // 2. Open the database (or create it if it doesn't exist)
   Future<Database> get database async {
     if (_database != null) return _database!;
-    _database = await _initDB('oligarch_database.db');
+    _database = await _initDB('oligarch_player_db.db');
     return _database!;
   }
 
