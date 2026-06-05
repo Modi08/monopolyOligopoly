@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:monopolyoligarch/services/database/models.dart';
 import 'constants/theme.dart';
 import 'pages/join_game_page.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -34,11 +35,30 @@ class Oligarch extends StatefulWidget {
 class _OligarchState extends State<Oligarch> {
   final DatabaseServicePlayer database = DatabaseServicePlayer.instance;
   int gameId = 0;
+  Player currentPlayer = Player(
+        id: 0,
+        name: "N.A",
+        cash: 5000,
+        propertiesOwnershipShares: {},
+        propertiesVotershare: {},
+        position: 0,
+        inJail: false,
+        jailTurns: 0,
+        activeLoans: {},
+        playerTurn: 0,
+        isCurrentPlayer: true,
+      );
   final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
 
   void setGameId(int value) {
     setState(() {
       gameId = value;
+    });
+  }
+  
+  void setCurrentPlayerData(Player player) {
+    setState(() {
+      currentPlayer = player;
     });
   }
 
@@ -66,6 +86,7 @@ class _OligarchState extends State<Oligarch> {
               height: height,
               database: database,
               setGameId: setGameId,
+              setCurrentPlayerData: setCurrentPlayerData,
             ),
         '/waitingScreen': (context) => WaitingPage(
           width: width,

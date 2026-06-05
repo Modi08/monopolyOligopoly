@@ -127,6 +127,7 @@ class _WaitingPageState extends State<WaitingPage> {
                       },
                     ),
                   ),
+            
             ElevatedButton(
               style: theme.elevatedButtonTheme.style,
               onPressed: () {

@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 class Player {
-  final int? id;
+  final int id;
   final String name;
   final int cash;
   final Map<String, dynamic> propertiesOwnershipShares;
@@ -14,7 +14,7 @@ class Player {
   final bool isCurrentPlayer;
 
   Player({
-    this.id,
+    required this.id,
     required this.name,
     required this.cash,
     required this.propertiesOwnershipShares,
@@ -53,7 +53,7 @@ class Player {
   // Convert a Map from SQLite back into a Player object
   factory Player.fromMap(Map<String, dynamic> map, {bool isDatabase = false}) {
     return Player(
-      id: map['id'] as int?,
+      id: map['id'] as int,
       name: map['username'] as String,
       cash: map['cash'] as int,
       propertiesOwnershipShares: isDatabase

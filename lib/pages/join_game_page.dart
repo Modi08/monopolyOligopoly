@@ -34,6 +34,8 @@ Future<void> joinGame(
   FirebaseFunctions functions,
   context,
   DatabaseServicePlayer database,
+  void Function(int) setGameId,
+  void Function(Player) setCurrentPlayerData,
 ) async {
   try {
     final callable = functions.httpsCallable('joinGameFunction');
@@ -57,21 +59,22 @@ Future<void> joinGame(
       await database.insertPlayer(Player.fromMap(playerMap));
     }
 
-    await database.insertPlayer(
-      Player(
-        id: response.data['newPlayerId'] as int,
-        name: username,
-        cash: 5000,
-        propertiesOwnershipShares: {},
-        propertiesVotershare: {},
-        position: 0,
-        inJail: false,
-        jailTurns: 0,
-        activeLoans: {},
-        playerTurn: 0,
-        isCurrentPlayer: true,
-      ),
+    setGameId(int.parse(gameId));
+    Player player = Player(
+      id: response.data['newPlayerId'] as int,
+      name: username,
+      cash: 5000,
+      propertiesOwnershipShares: {},
+      propertiesVotershare: {},
+      position: 0,
+      inJail: false,
+      jailTurns: 0,
+      activeLoans: {},
+      playerTurn: 0,
+      isCurrentPlayer: true,
     );
+    setCurrentPlayerData(player);
+    await database.insertPlayer(player);
 
     Navigator.pushNamed(context, '/waitingScreen');
   } catch (e) {
@@ -85,6 +88,7 @@ Future<void> createGame(
   context,
   DatabaseServicePlayer database,
   void Function(int) setGameId,
+  void Function(Player) setCurrentPlayerData,
 ) async {
   try {
     final callable = functions.httpsCallable('createGameFunction');
@@ -99,21 +103,22 @@ Future<void> createGame(
 
     setGameId(response.data["gameId"]);
 
-    await database.insertPlayer(
-      Player(
-        id: 1,
-        name: username,
-        cash: 5000,
-        propertiesOwnershipShares: {},
-        propertiesVotershare: {},
-        position: 0,
-        inJail: false,
-        jailTurns: 0,
-        activeLoans: {},
-        playerTurn: 0,
-        isCurrentPlayer: true,
-      ),
+    Player player = Player(
+      id: 1,
+      name: username,
+      cash: 5000,
+      propertiesOwnershipShares: {},
+      propertiesVotershare: {},
+      position: 0,
+      inJail: false,
+      jailTurns: 0,
+      activeLoans: {},
+      playerTurn: 0,
+      isCurrentPlayer: true,
     );
+    setCurrentPlayerData(player);
+
+    await database.insertPlayer(player);
 
     Navigator.pushNamed(context, "/waitingScreen");
   } catch (e) {
@@ -126,12 +131,14 @@ class JoinScreen extends StatefulWidget {
   final double height;
   final DatabaseServicePlayer database;
   final void Function(int) setGameId;
+  final void Function(Player) setCurrentPlayerData;
   const JoinScreen({
     super.key,
     required this.width,
     required this.height,
     required this.database,
     required this.setGameId,
+    required this.setCurrentPlayerData,
   });
 
   @override
@@ -287,6 +294,8 @@ class _JoinScreenState extends State<JoinScreen> {
                           functions,
                           context,
                           widget.database,
+                          widget.setGameId,
+                          widget.setCurrentPlayerData,
                         );
                       } else {
                         if (usernameController.text.isEmpty) {
@@ -303,6 +312,7 @@ class _JoinScreenState extends State<JoinScreen> {
                           context,
                           widget.database,
                           widget.setGameId,
+                          widget.setCurrentPlayerData,
                         );
                       }
                     },
