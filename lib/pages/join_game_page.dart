@@ -69,7 +69,7 @@ Future<void> joinGame(
         jailTurns: 0,
         activeLoans: {},
         playerTurn: 0,
-        isCurrentPlayer: true
+        isCurrentPlayer: true,
       ),
     );
 
@@ -84,6 +84,7 @@ Future<void> createGame(
   FirebaseFunctions functions,
   context,
   DatabaseServicePlayer database,
+  void Function(int) setGameId,
 ) async {
   try {
     final callable = functions.httpsCallable('createGameFunction');
@@ -95,6 +96,9 @@ Future<void> createGame(
       response.data['message'],
       response.data['statusCode'] != 200,
     );
+
+    setGameId(response.data["gameId"]);
+
     await database.insertPlayer(
       Player(
         id: 1,
@@ -107,7 +111,7 @@ Future<void> createGame(
         jailTurns: 0,
         activeLoans: {},
         playerTurn: 0,
-        isCurrentPlayer: true
+        isCurrentPlayer: true,
       ),
     );
 
@@ -121,11 +125,13 @@ class JoinScreen extends StatefulWidget {
   final double width;
   final double height;
   final DatabaseServicePlayer database;
+  final void Function(int) setGameId;
   const JoinScreen({
     super.key,
     required this.width,
     required this.height,
     required this.database,
+    required this.setGameId,
   });
 
   @override
@@ -296,6 +302,7 @@ class _JoinScreenState extends State<JoinScreen> {
                           functions,
                           context,
                           widget.database,
+                          widget.setGameId,
                         );
                       }
                     },

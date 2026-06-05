@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:monopolyoligarch/components/playercard.dart';
 import 'package:monopolyoligarch/services/database/models.dart';
@@ -7,11 +8,15 @@ class WaitingPage extends StatefulWidget {
   final double width;
   final double height;
   final DatabaseServicePlayer database;
+  final FirebaseFirestore firestoreInstance;
+  final int gameId;
   const WaitingPage({
     super.key,
     required this.width,
     required this.height,
     required this.database,
+    required this.firestoreInstance,
+    required this.gameId,
   });
 
   @override
@@ -21,6 +26,7 @@ class WaitingPage extends StatefulWidget {
 class _WaitingPageState extends State<WaitingPage> {
   List<Player> playerList = [];
   int count = 0;
+  bool gameStarted = false;
 
   void loadUserData() {
     widget.database.getAllPlayers().then((userList) {
@@ -39,10 +45,38 @@ class _WaitingPageState extends State<WaitingPage> {
     });
   }
 
+  void listentoPlayerStream(int gameId) {
+    debugPrint(gameId.toString());
+    widget.firestoreInstance
+        .collection(gameId.toString())
+        .doc("players")
+        .snapshots()
+        .map((DocumentSnapshot snapshot) {
+          Map<String, dynamic> rawPlayersSnapshot =
+              snapshot.data() as Map<String, dynamic>;
+
+          if (rawPlayersSnapshot.keys.toList().length > playerList.length) {
+            List<Player> playersSnapshot = [];
+            for (var index in rawPlayersSnapshot.keys.toList()) {
+              Player player = Player.fromMap(Map<String, dynamic>.from(rawPlayersSnapshot.values.toList()[int.parse(index)]));
+              playersSnapshot.add(player);
+            }
+            
+            setState(() {
+              playerList = playersSnapshot;
+            });
+          }
+          if (!gameStarted) {
+            listentoPlayerStream(gameId);
+          }
+        });
+  }
+
   @override
   void initState() {
     super.initState();
     loadUserData();
+    listentoPlayerStream(widget.gameId);
   }
 
   @override

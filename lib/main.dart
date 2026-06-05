@@ -4,6 +4,7 @@ import 'constants/theme.dart';
 import 'pages/join_game_page.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_app_check/firebase_app_check.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'firebase_options.dart';
 import 'services/database/database_service.dart';
 import 'pages/waiting_page.dart';
@@ -32,7 +33,14 @@ class Oligarch extends StatefulWidget {
 
 class _OligarchState extends State<Oligarch> {
   final DatabaseServicePlayer database = DatabaseServicePlayer.instance;
-  final int gameIds = 0;
+  int gameId = 0;
+  final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
+
+  void setGameId(int value) {
+    setState(() {
+      gameId = value;
+    });
+  }
 
   @override
   void initState() {
@@ -52,8 +60,20 @@ class _OligarchState extends State<Oligarch> {
       initialRoute: '/',
       routes: {
         '/': (context) =>
-            JoinScreen(width: width, height: height, database: database),
-        '/waitingScreen': (context) => WaitingPage(width: width, height: height, database: database),
+            // ignore: void_checks
+            JoinScreen(
+              width: width,
+              height: height,
+              database: database,
+              setGameId: setGameId,
+            ),
+        '/waitingScreen': (context) => WaitingPage(
+          width: width,
+          height: height,
+          database: database,
+          firestoreInstance: firestoreInstance,
+          gameId: gameId,
+        ),
       },
     );
   }
