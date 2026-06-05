@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "54118458668",
+    "project_id": "oligarch-498212",
+    "storage_bucket": "oligarch-498212.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:54118458668:android:e5081a7a2e41c06968f889",
+        "android_client_info": {
+          "package_name": "com.example.monopolyoligarch"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCWC-yD52t99j02cYPUEBIuchF1myQU1DA"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
