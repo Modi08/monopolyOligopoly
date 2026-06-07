@@ -1,1 +1,25 @@
-{"flutter":{"platforms":{"android":{"default":{"projectId":"oligarch-498212","appId":"1:54118458668:android:e5081a7a2e41c06968f889","fileOutput":"android/app/google-services.json"}},"dart":{"lib/firebase_options.dart":{"projectId":"oligarch-498212","configurations":{"android":"1:54118458668:android:e5081a7a2e41c06968f889","ios":"1:54118458668:ios:34fada895aa74a1a68f889","macos":"1:54118458668:ios:34fada895aa74a1a68f889","web":"1:54118458668:web:327a3b5c8af9413c68f889","windows":"1:54118458668:web:c42e01945827a0bd68f889"}}}}}}
+{
+    "flutter": {
+        "platforms": {
+            "android": {
+                "default": {
+                    "projectId": "oligarch-498212",
+                    "appId": "1:54118458668:android:e5081a7a2e41c06968f889",
+                    "fileOutput": "android/app/google-services.json"
+                }
+            },
+            "dart": {
+                "lib/firebase_options.dart": {
+                    "projectId": "oligarch-498212",
+                    "configurations": {
+                        "android": "1:54118458668:android:e5081a7a2e41c06968f889",
+                        "ios": "1:54118458668:ios:34fada895aa74a1a68f889",
+                        "macos": "1:54118458668:ios:34fada895aa74a1a68f889",
+                        "web": "1:54118458668:web:327a3b5c8af9413c68f889",
+                        "windows": "1:54118458668:web:c42e01945827a0bd68f889"
+                    }
+                }
+            }
+        }
+    }
+}

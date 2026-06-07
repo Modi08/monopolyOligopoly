@@ -51,7 +51,7 @@ def join_game(req: https_fn.CallableRequest) -> dict:
                 }
 
             userData["id"] = int(userId)
-            userData["isCurrentUser"] = False
+            userData["isCurrentPlayer"] = False
             allUsers.append(userData)
 
         docRef.update(

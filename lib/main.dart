@@ -36,26 +36,31 @@ class _OligarchState extends State<Oligarch> {
   final DatabaseServicePlayer database = DatabaseServicePlayer.instance;
   int gameId = 0;
   Player currentPlayer = Player(
-        id: 0,
-        name: "N.A",
-        cash: 5000,
-        propertiesOwnershipShares: {},
-        propertiesVotershare: {},
-        position: 0,
-        inJail: false,
-        jailTurns: 0,
-        activeLoans: {},
-        playerTurn: 0,
-        isCurrentPlayer: true,
-      );
-  final FirebaseFirestore firestoreInstance = FirebaseFirestore.instance;
+    id: 0,
+    name: "N.A",
+    cash: 5000,
+    propertiesOwnershipShares: {},
+    propertiesVotershare: {},
+    position: 0,
+    inJail: false,
+    jailTurns: 0,
+    activeLoans: {},
+    playerTurn: 0,
+    isCurrentPlayer: true,
+  );
+  
+  final firestoreInstance = FirebaseFirestore.instanceFor(
+    app: Firebase.app(),
+    databaseId:
+        'oligarch-firestore-db',
+  );
 
   void setGameId(int value) {
     setState(() {
       gameId = value;
     });
   }
-  
+
   void setCurrentPlayerData(Player player) {
     setState(() {
       currentPlayer = player;

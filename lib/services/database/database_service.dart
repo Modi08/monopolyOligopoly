@@ -11,7 +11,12 @@ class DatabaseServicePlayer {
 
   // 2. Open the database (or create it if it doesn't exist)
   Future<Database> get database async {
-    if (_database != null) return _database!;
+    final dbPath = await getDatabasesPath();
+    final path = join(dbPath, 'oligarch_database.db');
+
+    await deleteDatabase(path);
+    //if (_database != null) return _database!;
+    
     _database = await _initDB('oligarch_player_db.db');
     return _database!;
   }

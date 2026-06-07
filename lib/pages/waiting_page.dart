@@ -27,6 +27,7 @@ class _WaitingPageState extends State<WaitingPage> {
   List<Player> playerList = [];
   int count = 0;
   bool gameStarted = false;
+  bool printDebugLine = true;
 
   void loadUserData() {
     widget.database.getAllPlayers().then((userList) {
@@ -46,24 +47,37 @@ class _WaitingPageState extends State<WaitingPage> {
   }
 
   void listentoPlayerStream(int gameId) {
-    debugPrint(gameId.toString());
+    if (printDebugLine) (debugPrint("listening to Player Stream"));
     widget.firestoreInstance
         .collection(gameId.toString())
         .doc("players")
         .snapshots()
-        .map((DocumentSnapshot snapshot) {
+        .listen((DocumentSnapshot snapshot) {
+          setState(() {
+            printDebugLine = false;
+          });
+          if (!snapshot.exists) {
+            listentoPlayerStream(gameId);
+            return;
+          }
+
           Map<String, dynamic> rawPlayersSnapshot =
               snapshot.data() as Map<String, dynamic>;
 
           if (rawPlayersSnapshot.keys.toList().length > playerList.length) {
             List<Player> playersSnapshot = [];
             for (var index in rawPlayersSnapshot.keys.toList()) {
-              Player player = Player.fromMap(Map<String, dynamic>.from(rawPlayersSnapshot.values.toList()[int.parse(index)]));
+              Player player = Player.fromMap(
+                Map<String, dynamic>.from(
+                  rawPlayersSnapshot.values.toList()[int.parse(index)],
+                ),
+              );
               playersSnapshot.add(player);
             }
-            
+
             setState(() {
               playerList = playersSnapshot;
+              printDebugLine = true;
             });
           }
           if (!gameStarted) {
@@ -81,7 +95,6 @@ class _WaitingPageState extends State<WaitingPage> {
 
   @override
   Widget build(BuildContext context) {
-    loadUserData();
     final theme = Theme.of(context);
 
     return Scaffold(
@@ -127,7 +140,7 @@ class _WaitingPageState extends State<WaitingPage> {
                       },
                     ),
                   ),
-            
+
             ElevatedButton(
               style: theme.elevatedButtonTheme.style,
               onPressed: () {

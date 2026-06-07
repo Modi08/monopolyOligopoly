@@ -53,6 +53,7 @@ Future<void> joinGame(
     );
 
     List<dynamic> playersData = response.data['players'] as List<dynamic>;
+
     for (var player in playersData) {
       Map<String, dynamic> playerMap = jsonDecode(jsonEncode(player));
       debugPrint('Player data: $playerMap');
@@ -73,6 +74,7 @@ Future<void> joinGame(
       playerTurn: 0,
       isCurrentPlayer: true,
     );
+
     setCurrentPlayerData(player);
     await database.insertPlayer(player);
 
