@@ -12,12 +12,12 @@ class DatabaseServicePlayer {
   // 2. Open the database (or create it if it doesn't exist)
   Future<Database> get database async {
     final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'oligarch_database.db');
+    final path = join(dbPath, 'oligarch_db.db');
 
     await deleteDatabase(path);
     //if (_database != null) return _database!;
-    
-    _database = await _initDB('oligarch_player_db.db');
+
+    _database = await _initDB('oligarch_db.db');
     return _database!;
   }
 
@@ -31,13 +31,12 @@ class DatabaseServicePlayer {
       onCreate: _createDB, // Called only the very first time the app runs
     );
   }
-  
+
   // 3. Create the Tables
   Future _createDB(Database db, int version) async {
     const idType = 'INTEGER PRIMARY KEY AUTOINCREMENT';
     const textType = 'TEXT NOT NULL';
     const intType = 'INTEGER NOT NULL';
-    
 
     await db.execute('''
       CREATE TABLE players (
@@ -97,5 +96,10 @@ class DatabaseServicePlayer {
   Future close() async {
     final db = await instance.database;
     db.close();
+  }
+
+  Future<void> clearAllPLayers() async {
+    final db = await instance.database;
+    await db.delete('players');
   }
 }

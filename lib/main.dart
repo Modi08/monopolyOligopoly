@@ -48,11 +48,10 @@ class _OligarchState extends State<Oligarch> {
     playerTurn: 0,
     isCurrentPlayer: true,
   );
-  
+
   final firestoreInstance = FirebaseFirestore.instanceFor(
     app: Firebase.app(),
-    databaseId:
-        'oligarch-firestore-db',
+    databaseId: 'oligarch-firestore-db',
   );
 
   void setGameId(int value) {
@@ -70,7 +69,7 @@ class _OligarchState extends State<Oligarch> {
   @override
   void initState() {
     super.initState();
-    database.getAllPlayers().then((players) {});
+    database.clearAllPLayers();
   }
 
   @override
@@ -99,6 +98,7 @@ class _OligarchState extends State<Oligarch> {
           database: database,
           firestoreInstance: firestoreInstance,
           gameId: gameId,
+          currentPlayer: currentPlayer,
         ),
       },
     );
