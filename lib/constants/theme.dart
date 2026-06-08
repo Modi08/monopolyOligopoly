@@ -42,8 +42,7 @@ class AppTheme {
         tertiary: successGreen,
         surface: secondaryBackground,
         error: errorRed,
-        onPrimary: primaryBackground, // Text on primary buttons
-        onBackground: textPrimary,
+        onPrimary: textSecondary, // Text on primary buttons
         inversePrimary: textFlare,
         onSurface: textPrimary,
       ),

@@ -10,7 +10,7 @@ class PlayerCard extends StatelessWidget {
     required this.height,
     required this.width,
     required this.theme,
-    required this.username
+    required this.username,
   });
 
   @override
@@ -50,7 +50,7 @@ class PlayerCard extends StatelessWidget {
               username,
               style: theme.textTheme.bodyMedium!.copyWith(
                 color: theme.colorScheme.onSurface,
-                fontWeight: FontWeight.bold
+                fontWeight: FontWeight.bold,
               ),
             ),
             Spacer(flex: 1),

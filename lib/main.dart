@@ -1,5 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:monopolyoligarch/pages/home_page.dart';
 import 'package:monopolyoligarch/services/database/models.dart';
 import 'constants/theme.dart';
 import 'pages/join_game_page.dart';
@@ -70,6 +71,7 @@ class _OligarchState extends State<Oligarch> {
   void initState() {
     super.initState();
     database.clearAllPLayers();
+    debugPrint("Game started");
   }
 
   @override
@@ -100,6 +102,7 @@ class _OligarchState extends State<Oligarch> {
           gameId: gameId,
           currentPlayer: currentPlayer,
         ),
+        '/HomePage':(context) => HomePage()
       },
     );
   }

@@ -104,7 +104,6 @@ class _WaitingPageState extends State<WaitingPage> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: Center(
@@ -119,6 +118,14 @@ class _WaitingPageState extends State<WaitingPage> {
                 color: const Color.fromARGB(255, 163, 82, 255),
               ),
               textAlign: TextAlign.center,
+            ),
+            SizedBox(height: widget.height * 0.025),
+            Text(
+              "Room: ${widget.gameId}",
+              style: theme.textTheme.titleLarge!.copyWith(
+                fontWeight: FontWeight.bold,
+                color: const Color.fromARGB(255, 21, 238, 57),
+              ),
             ),
             SizedBox(height: widget.height * 0.025),
             Text(
@@ -149,19 +156,24 @@ class _WaitingPageState extends State<WaitingPage> {
                     ),
                   ),
 
-            ElevatedButton(
-              style: theme.elevatedButtonTheme.style,
-              onPressed: () {
-                debugPrint("hello");
-              },
-              child: Text(
-                "Start Game",
-                style: theme.textTheme.bodyLarge!.copyWith(
-                  color: theme.colorScheme.secondary,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-            ),
+            widget.currentPlayer.id == 1
+                ? ElevatedButton(
+                    style: theme.elevatedButtonTheme.style,
+                    onPressed: () {
+                      setState(() {
+                        gameStarted = true;
+                        Navigator.pushNamed(context, "/HomePage");
+                      });
+                    },
+                    child: Text(
+                      "Start Game",
+                      style: theme.textTheme.bodyLarge!.copyWith(
+                        color: theme.colorScheme.secondary,
+                        fontWeight: FontWeight.bold,
+                      ),
+                    ),
+                  )
+                : Spacer(),
             SizedBox(height: widget.height * 0.02),
           ],
         ),
