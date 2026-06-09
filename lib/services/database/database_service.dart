@@ -43,6 +43,7 @@ class DatabaseServicePlayer {
         id $idType,
         username $textType,
         cash $intType,
+        netWorth $intType,
         propertiesOwnershipShares $textType,
         propertiesVotershare $textType,
         position $intType,

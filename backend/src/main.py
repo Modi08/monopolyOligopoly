@@ -58,6 +58,7 @@ def join_game(req: https_fn.CallableRequest) -> dict:
             {
                 str(highestUserId + 1): {
                     "cash": 5000,
+                    "netWorth": 5000,
                     "propertiesOwnershipShares": {},
                     "propertiesVotershare": {},
                     "position": 0,
@@ -98,6 +99,7 @@ def create_game(req: https_fn.CallableRequest) -> dict:
         {
             "1": {
                 "cash": 5000,
+                "netWorth": 5000,
                 "propertiesOwnershipShares": {},
                 "propertiesVotershare": {},
                 "position": 0,

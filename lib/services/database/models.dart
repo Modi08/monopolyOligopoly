@@ -4,6 +4,7 @@ class Player {
   final int id;
   final String name;
   final int cash;
+  final int netWorth;
   final Map<String, dynamic> propertiesOwnershipShares;
   final Map<String, dynamic> propertiesVotershare;
   final int position;
@@ -17,6 +18,7 @@ class Player {
     required this.id,
     required this.name,
     required this.cash,
+    required this.netWorth,
     required this.propertiesOwnershipShares,
     required this.propertiesVotershare,
     required this.position,
@@ -33,6 +35,7 @@ class Player {
       'id': id,
       'username': name,
       'cash': cash,
+      'netWorth': netWorth,
       'propertiesOwnershipShares': isDatabase
           ? propertiesOwnershipShares.toString()
           : propertiesOwnershipShares,
@@ -56,6 +59,7 @@ class Player {
       id: map['id'] as int,
       name: map['username'] as String,
       cash: map['cash'] as int,
+      netWorth: map['netWorth'],
       propertiesOwnershipShares: isDatabase
           ? jsonDecode(map['propertiesOwnershipShares']) as Map<String, dynamic>
           : map['propertiesOwnershipShares'] as Map<String, dynamic>,

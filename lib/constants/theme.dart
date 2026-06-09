@@ -3,9 +3,8 @@ import 'package:flutter/material.dart';
 class AppTheme {
   // Core Colors - Swap these out with the hex codes from your images!
   static const Color primaryBackground = Color(0xFF0A192F); // Dark Navy Base
-  static const Color secondaryBackground = Color(
-    0xFF112240,
-  ); // Lighter Navy/Gray for cards
+  static const Color secondaryBackground = Color.fromARGB(255, 24, 47, 88); // Lighter Navy/Gray for cards
+  static const Color primaryColor = Color(0xFF818CF8);
   static const Color primaryAccent = Color(
     0xFF64FFDA,
   ); // Neon Green for actions
@@ -32,7 +31,7 @@ class AppTheme {
     return ThemeData(
       brightness: Brightness.dark,
       scaffoldBackgroundColor: primaryBackground,
-      primaryColor: primaryAccent,
+      primaryColor: primaryColor,
       cardColor: secondaryBackground,
 
       // Color Scheme

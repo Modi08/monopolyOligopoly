@@ -40,6 +40,7 @@ class _OligarchState extends State<Oligarch> {
     id: 0,
     name: "N.A",
     cash: 5000,
+    netWorth: 5000,
     propertiesOwnershipShares: {},
     propertiesVotershare: {},
     position: 0,
@@ -102,7 +103,11 @@ class _OligarchState extends State<Oligarch> {
           gameId: gameId,
           currentPlayer: currentPlayer,
         ),
-        '/HomePage':(context) => HomePage()
+        '/HomePage': (context) => HomePage(
+          width: width,
+          height: height,
+          currentPlayer: currentPlayer,
+        ),
       },
     );
   }

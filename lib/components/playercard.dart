@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:monopolyoligarch/components/avatarcirclecard.dart';
 
 class PlayerCard extends StatelessWidget {
   final double width;
@@ -30,21 +31,7 @@ class PlayerCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Spacer(flex: 1),
-            Container(
-              height: height * 0.075,
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color: theme.scaffoldBackgroundColor,
-                shape: BoxShape.circle,
-              ),
-              child: Text(
-                "${username[0].toUpperCase()}${username[1].toLowerCase()}",
-                style: theme.textTheme.bodyLarge!.copyWith(
-                  fontWeight: FontWeight.bold,
-                  fontSize: 20,
-                ),
-              ),
-            ),
+            AvatarCircleCard(height: height, width: width, username: username, isColorPrimary: true,),
             Spacer(flex: 2),
             Text(
               username,

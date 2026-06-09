@@ -2,9 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:monopolyoligarch/pages/screens/accountActions.dart';
 import 'package:monopolyoligarch/pages/screens/dashboard.dart';
 import 'package:monopolyoligarch/pages/screens/portfolio.dart';
+import 'package:monopolyoligarch/services/database/models.dart';
 
 class HomePage extends StatefulWidget {
-  const HomePage({super.key});
+  final double height;
+  final double width;
+  final Player currentPlayer;
+  const HomePage({super.key, required this.width, required this.height, required this.currentPlayer});
 
   @override
   State<HomePage> createState() => _HomePageState();
@@ -12,7 +16,11 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   int selectedScreenIndex = 1;
-  List<Widget> pages = [Portfolio(), Dashboard(), AccountActions()];
+  List<Widget> get pages => [
+    const Portfolio(),
+    Dashboard(height: widget.height, width: widget.width, currentPlayer: widget.currentPlayer,),
+    const AccountActions(),
+  ];
 
   void onScreenSelected(int index) {
     setState(() {
