@@ -75,7 +75,7 @@ class _WaitingPageState extends State<WaitingPage> {
 
               rawPlayerData["id"] = int.parse(index);
               rawPlayerData["isCurrentPlayer"] = false;
-
+              debugPrint(rawPlayerData.toString());
               Player player = Player.fromMap(rawPlayerData);
               playersSnapshot.add(player);
             }

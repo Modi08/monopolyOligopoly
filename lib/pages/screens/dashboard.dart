@@ -51,26 +51,10 @@ class _DashboardState extends State<Dashboard> {
     [Icons.currency_exchange_rounded, "Start Trade", startTrade],
     [Icons.real_estate_agent_rounded, "Rent Out", rentOut],
   ];
-  List<Widget> actionCardsLists = [];
-
-  List<Widget> buildActionCardsList() {
-    return actionsLists.map((actionElements) {
-      return ActionCard(
-        height: widget.height,
-        width: widget.width,
-        iconSymbol: actionElements[0],
-        action: actionElements[1],
-        actionFunction: actionElements[2],
-      );
-    }).toList();
-  }
 
   @override
   void initState() {
     super.initState();
-    setState(() {
-      actionCardsLists = buildActionCardsList();
-    });
   }
 
   @override
@@ -193,42 +177,54 @@ class _DashboardState extends State<Dashboard> {
           ),
           SizedBox(height: widget.height * 0.005),
           Text("Strategic Actions", style: theme.textTheme.bodyMedium),
-          SingleChildScrollView(
-            scrollDirection: Axis.horizontal,
-            child: Row(
-              spacing: widget.width * 0.05,
-              children: actionCardsLists,
+          Expanded(
+            child: GridView.builder(
+              gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+                crossAxisCount: 3,
+                crossAxisSpacing: 15,
+                mainAxisSpacing: 15,
+              ),
+              itemCount: actionsLists.length,
+              itemBuilder: (context, index) {
+                return ActionCard(
+                  width: widget.width,
+                  iconSymbol: actionsLists[index][0],
+                  action: actionsLists[index][1],
+                  actionFunction: actionsLists[index][2],
+                );
+              },
             ),
           ),
-          SizedBox(height: widget.height * 0.015),
-          Row(
-            children: [
-              Text(
-                "Urgent Alerts",
-                style: theme.textTheme.bodyLarge!.copyWith(
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const Spacer(),
-              Container(
-                decoration: BoxDecoration(
-                  color: theme.colorScheme.error,
-                  shape: BoxShape.rectangle,
-                  borderRadius: const BorderRadius.all(Radius.circular(24)),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.all(4.0),
-                  child: Text(
-                    "2 ACTIVE",
-                    style: theme.textTheme.bodyMedium!.copyWith(
-                      color: Colors.black,
-                      fontWeight: FontWeight.bold
+          widget.currentPlayer.playerTurn == widget.currentPlayer.id
+              ? Center(
+                  child: ElevatedButton(
+                    onPressed: () {
+                      debugPrint('Turn Ended');
+                    },
+
+                    style: theme.elevatedButtonTheme.style!.copyWith(
+                      backgroundColor: WidgetStateProperty.resolveWith<Color>((
+                        states,
+                      ) {
+                        if (states.contains(WidgetState.pressed)) {
+                          return theme
+                              .colorScheme
+                              .inversePrimary; // Brighter color on hover
+                        }
+                        return theme.colorScheme.error;
+                      }),
+                    ),
+                    child: Text(
+                      "End Turn",
+                      style: theme.textTheme.bodyLarge!.copyWith(
+                        color: Colors.black,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                   ),
-                ),
-              ),
-            ],
-          ),
+                )
+              : SizedBox(),
+          SizedBox(height: widget.height * 0.005),
         ],
       ),
     );

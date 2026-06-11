@@ -2,13 +2,11 @@ import 'package:flutter/material.dart';
 
 class ActionCard extends StatelessWidget {
   final double width;
-  final double height;
   final IconData iconSymbol;
   final String action;
   final VoidCallback actionFunction;
   const ActionCard({
     super.key,
-    required this.height,
     required this.width,
     required this.iconSymbol,
     required this.action,
@@ -24,8 +22,8 @@ class ActionCard extends StatelessWidget {
         actionFunction();
       },
       child: Container(
-        height: width * 0.25,
-        width: width * 0.25,
+        height: width * 0.15,
+        width: width * 0.15,
         decoration: BoxDecoration(
           color: theme.cardColor,
           borderRadius: BorderRadius.circular(32),
@@ -34,7 +32,7 @@ class ActionCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(iconSymbol, color: theme.primaryColor, size: 40,),
+            Icon(iconSymbol, color: theme.primaryColor, size: 35,),
             Text(
               action,
               style: theme.textTheme.bodyMedium!.copyWith(
