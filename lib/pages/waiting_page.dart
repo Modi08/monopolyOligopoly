@@ -71,8 +71,6 @@ class _WaitingPageState extends State<WaitingPage> {
           if (rawPlayersSnapshot.keys.toList().length > playerList.length) {
             List<Player> playersSnapshot = [];
             
-            debugPrint("raw player snapshot: ${rawPlayersSnapshot.keys.toList().toString()}");
-
             for (var index in rawPlayersSnapshot.keys.toList()) {
               Map<String, dynamic> rawPlayerData = Map<String, dynamic>.from(
                 rawPlayersSnapshot.values.toList()[int.parse(index) - 1],

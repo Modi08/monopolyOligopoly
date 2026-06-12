@@ -36,8 +36,8 @@ class GameClient {
 
     switch (event) {
       case 'gameStarted':
-        // This fires for EVERY connected player
         print("Game Stared: $data");
+        onGameStarted();
         break;
       // Add other cases here later (e.g., 'player_moved', 'rent_paid')
     }
