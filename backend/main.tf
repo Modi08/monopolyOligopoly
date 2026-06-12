@@ -129,3 +129,49 @@ resource "google_cloud_run_service_iam_member" "create_public_invoker" {
   member   = "allUsers"
 }
 
+
+# ==========================================
+# 3. Deploying Websocket functionality
+# ==========================================
+
+resource "google_cloud_run_v2_service" "game_websocket_server" {
+  name     = "oligarch-websocket-server"
+  location = "europe-west4"
+  ingress  = "INGRESS_TRAFFIC_ALL"
+  deletion_protection=false 
+
+  template {
+    containers {
+      image = "europe-west4-docker.pkg.dev/oligarch-498212/oligarch-repo/websocket-image:latest"
+      
+      resources {
+        limits = {
+          cpu    = "1"
+          memory = "512Mi"
+        }
+      }
+      
+      ports {
+        container_port = 8080
+      }
+    }
+
+    # CRITICAL: WebSockets require multiple connections to hit the same instance.
+    max_instance_request_concurrency = 80 
+  }
+}
+
+resource "google_cloud_run_service_iam_member" "websocket_public" {
+  project  = google_cloud_run_v2_service.game_websocket_server.project
+  location = google_cloud_run_v2_service.game_websocket_server.location
+  service  = google_cloud_run_v2_service.game_websocket_server.name
+  role     = "roles/run.invoker"
+  member   = "allUsers"
+}
+
+resource "google_artifact_registry_repository" "my_repo" {
+  location      = "europe-west4"
+  repository_id = "oligarch-repo"
+  description   = "Docker repository for Oligarch WebSocket server"
+  format        = "DOCKER"
+}

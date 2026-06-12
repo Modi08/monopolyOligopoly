@@ -2,6 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:monopolyoligarch/pages/home_page.dart';
 import 'package:monopolyoligarch/services/database/models.dart';
+import 'package:monopolyoligarch/services/socket.dart';
 import 'constants/theme.dart';
 import 'pages/join_game_page.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -33,7 +34,7 @@ class Oligarch extends StatefulWidget {
   State<Oligarch> createState() => _OligarchState();
 }
 
-class _OligarchState extends State<Oligarch> {
+class _OligarchState extends State<Oligarch> with WidgetsBindingObserver {
   final DatabaseServicePlayer database = DatabaseServicePlayer.instance;
   int gameId = 0;
   Player currentPlayer = Player(
@@ -73,6 +74,30 @@ class _OligarchState extends State<Oligarch> {
     super.initState();
     database.clearAllPLayers();
     debugPrint("Game started");
+  }
+
+  @override
+  void dispose() {
+    WidgetsBinding.instance.removeObserver(this); // Clean up
+    super.dispose();
+  }
+
+  @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    if (state == AppLifecycleState.detached) {
+      // The user just minimized the app or swiped it away!
+      
+      if (locator.isRegistered<GameClient>()) {
+        // 1. Tell the server to pass the turn to the next person
+        // locator<GameClient>().autoPassTurn(); 
+        
+        // 2. Safely close the socket
+        locator<GameClient>().leaveGame();
+      }
+    } else if (state == AppLifecycleState.resumed) {
+      // The user came back. You can automatically reconnect the socket here
+      // and fetch the latest Firestore state to sync them back up.
+    }
   }
 
   @override

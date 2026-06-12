@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:monopolyoligarch/components/playercard.dart';
 import 'package:monopolyoligarch/services/database/models.dart';
 import '../services/database/database_service.dart';
+import '../services/socket.dart';
 
 class WaitingPage extends StatefulWidget {
   final double width;
@@ -58,6 +59,7 @@ class _WaitingPageState extends State<WaitingPage> {
           setState(() {
             printDebugLine = false;
           });
+          
           if (!snapshot.exists) {
             listentoPlayerStream(gameId, currentPlayer);
             return;
@@ -68,6 +70,9 @@ class _WaitingPageState extends State<WaitingPage> {
 
           if (rawPlayersSnapshot.keys.toList().length > playerList.length) {
             List<Player> playersSnapshot = [];
+            
+            debugPrint("raw player snapshot: ${rawPlayersSnapshot.keys.toList().toString()}");
+
             for (var index in rawPlayersSnapshot.keys.toList()) {
               Map<String, dynamic> rawPlayerData = Map<String, dynamic>.from(
                 rawPlayersSnapshot.values.toList()[int.parse(index) - 1],
@@ -99,6 +104,24 @@ class _WaitingPageState extends State<WaitingPage> {
     super.initState();
     loadUserData();
     listentoPlayerStream(widget.gameId, widget.currentPlayer);
+
+    if (!locator.isRegistered<GameClient>()) {
+      final client = GameClient(
+        gameId: widget.gameId.toString(),
+        playerId: widget.currentPlayer.id.toString(),
+        onGameStarted: () {
+          setState(() {
+            gameStarted = true;
+          });
+          if (mounted) {
+            Navigator.pushReplacementNamed(context, "/HomePage");
+          }
+        },
+      );
+
+      // Register it globally
+      locator.registerSingleton<GameClient>(client);
+    }
   }
 
   @override
@@ -161,6 +184,8 @@ class _WaitingPageState extends State<WaitingPage> {
                     style: theme.elevatedButtonTheme.style,
                     onPressed: () {
                       setState(() {
+                        locator<GameClient>().startGame();
+
                         gameStarted = true;
                         Navigator.pushNamed(context, "/HomePage");
                       });
