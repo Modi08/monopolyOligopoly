@@ -37,7 +37,7 @@ class _BoardActionPromptState extends State<BoardActionPrompt> {
       case PromptType.turnDisplay:
         return TurnDisplay(
           activeColor: widget.color ?? theme.colorScheme.tertiary,
-          playerTurn: widget.inputData[0],
+          playerTurn: widget.inputData,
           onButtonPress: widget.onButtonPress,
         );
 

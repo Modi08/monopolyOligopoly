@@ -120,11 +120,11 @@ class _HomePageState extends State<HomePage> {
 
             for (var (index, item) in playerOrder.indexed) {
               if (widget.currentPlayer.id == item) {
-                widget.currentPlayer.position = index + 1;
+                widget.currentPlayer.playerTurn = index + 1;
               }
             }
             showPrompt = true;
-            promptInputData = playerOrder;
+            promptInputData = widget.currentPlayer.playerTurn;
             promptColor = null;
             socketClient.userData = null;
           });
