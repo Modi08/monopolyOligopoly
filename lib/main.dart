@@ -86,11 +86,11 @@ class _OligarchState extends State<Oligarch> with WidgetsBindingObserver {
   void didChangeAppLifecycleState(AppLifecycleState state) {
     if (state == AppLifecycleState.detached) {
       // The user just minimized the app or swiped it away!
-      
+
       if (locator.isRegistered<GameClient>()) {
         // 1. Tell the server to pass the turn to the next person
-        // locator<GameClient>().autoPassTurn(); 
-        
+        // locator<GameClient>().autoPassTurn();
+
         // 2. Safely close the socket
         locator<GameClient>().leaveGame();
       }
@@ -132,6 +132,8 @@ class _OligarchState extends State<Oligarch> with WidgetsBindingObserver {
           width: width,
           height: height,
           currentPlayer: currentPlayer,
+          firestoreInstance: firestoreInstance,
+          database: database,
         ),
       },
     );

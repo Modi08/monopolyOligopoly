@@ -68,7 +68,38 @@ class DatabaseServicePlayer {
     );
   }
 
-  // READ: Fetch all players
+  Future<Player?> getPlayer(int id) async {
+    final db = await instance.database;
+
+    final maps = await db.query(
+      'players',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+
+    if (maps.isNotEmpty) {
+      return Player.fromMap(maps.first, isDatabase: true);
+    } else {
+      return null;
+    }
+  }
+
+  Future<dynamic> getParamofPlayer(int id, String param) async {
+    final db = await instance.database;
+
+    final maps = await db.query(
+      'players',
+      where: 'id = ?',
+      whereArgs: [id],
+    );
+
+    if (maps.isNotEmpty) {
+      return maps.first[param];
+    } else {
+      return null;
+    }
+  }
+
   Future<List<Player>> getAllPlayers() async {
     final db = await instance.database;
     final maps = await db.query('players'); // Returns a List of Maps
@@ -76,7 +107,6 @@ class DatabaseServicePlayer {
     return maps.map((json) => Player.fromMap(json, isDatabase: true)).toList();
   }
 
-  // UPDATE: Change a player's balance
   Future<int> updatePlayer(Player player) async {
     final db = await instance.database;
     return await db.update(
@@ -87,13 +117,11 @@ class DatabaseServicePlayer {
     );
   }
 
-  // DELETE: Remove a player
   Future<int> deletePlayer(int id) async {
     final db = await instance.database;
     return await db.delete('players', where: 'id = ?', whereArgs: [id]);
   }
 
-  // Close the database to free up resources
   Future close() async {
     final db = await instance.database;
     db.close();

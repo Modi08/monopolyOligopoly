@@ -56,7 +56,7 @@ Future<void> joinGame(
 
     for (var player in playersData) {
       Map<String, dynamic> playerMap = jsonDecode(jsonEncode(player));
-      debugPrint('Player data: $playerMap');
+      //debugPrint('Player data: $playerMap');
       await database.insertPlayer(Player.fromMap(playerMap));
     }
 
@@ -97,7 +97,7 @@ Future<void> createGame(
     final callable = functions.httpsCallable('createGameFunction');
     final response = await callable.call({'username': username});
 
-    debugPrint('Function response: ${response.data}');
+    //debugPrint('Function response: ${response.data}');
     showSnackbar(
       context,
       response.data['message'],

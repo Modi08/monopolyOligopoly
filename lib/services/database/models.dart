@@ -3,15 +3,15 @@ import 'dart:convert';
 class Player {
   final int id;
   final String name;
-  final int cash;
-  final int netWorth;
-  final Map<int, int> propertiesOwnershipShares;
-  final Map<int, int> propertiesVotershare;
-  final int position;
-  final bool inJail;
-  final int jailTurns;
-  final Map<int, dynamic> activeLoans;
-  final int playerTurn;
+  int cash;
+  int netWorth;
+  Map<int, int> propertiesOwnershipShares;
+  Map<int, int> propertiesVotershare;
+  int position;
+  bool inJail;
+  int jailTurns;
+  Map<int, dynamic> activeLoans;
+  int playerTurn;
   final bool isCurrentPlayer;
 
   Player({

@@ -30,7 +30,6 @@ class _WaitingPageState extends State<WaitingPage> {
   List<Player> playerList = [];
   int count = 0;
   bool gameStarted = false;
-  bool printDebugLine = true;
 
   void loadUserData() {
     widget.database.getAllPlayers().then((userList) {
@@ -50,16 +49,12 @@ class _WaitingPageState extends State<WaitingPage> {
   }
 
   void listentoPlayerStream(int gameId, Player currentPlayer) {
-    if (printDebugLine) (debugPrint("listening to Player Stream"));
+    debugPrint("listening to Player Stream");
     widget.firestoreInstance
         .collection(gameId.toString())
         .doc("players")
         .snapshots()
         .listen((DocumentSnapshot snapshot) {
-          setState(() {
-            printDebugLine = false;
-          });
-          
           if (!snapshot.exists) {
             listentoPlayerStream(gameId, currentPlayer);
             return;
@@ -70,7 +65,7 @@ class _WaitingPageState extends State<WaitingPage> {
 
           if (rawPlayersSnapshot.keys.toList().length > playerList.length) {
             List<Player> playersSnapshot = [];
-            
+
             for (var index in rawPlayersSnapshot.keys.toList()) {
               Map<String, dynamic> rawPlayerData = Map<String, dynamic>.from(
                 rawPlayersSnapshot.values.toList()[int.parse(index) - 1],
@@ -78,7 +73,6 @@ class _WaitingPageState extends State<WaitingPage> {
 
               rawPlayerData["id"] = int.parse(index);
               rawPlayerData["isCurrentPlayer"] = false;
-              debugPrint(rawPlayerData.toString());
               Player player = Player.fromMap(rawPlayerData);
               playersSnapshot.add(player);
             }
@@ -86,15 +80,18 @@ class _WaitingPageState extends State<WaitingPage> {
             debugPrint(playersSnapshot.length.toString());
             setState(() {
               playerList = playersSnapshot;
-              printDebugLine = true;
             });
+            if (!gameStarted) {
+              listentoPlayerStream(gameId, currentPlayer);
+              return;
+            } else {
+              debugPrint("Stopped listening to Player Stream");
+              return;
+            }
           }
-          if (!gameStarted) {
-            listentoPlayerStream(gameId, currentPlayer);
-            return;
-          }
-          return;
         });
+    debugPrint("end of function");
+    return;
   }
 
   @override
@@ -120,6 +117,7 @@ class _WaitingPageState extends State<WaitingPage> {
       // Register it globally
       locator.registerSingleton<GameClient>(client);
     }
+    debugPrint("1: ${locator<GameClient>().userData}");
   }
 
   @override

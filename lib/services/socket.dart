@@ -10,12 +10,13 @@ class GameClient {
   late WebSocketChannel _channel;
   final String gameId;
   final String playerId;
-  final VoidCallback onGameStarted; // Callback to trigger UI navigation
-
+  final VoidCallback onGameStarted;
+  dynamic userData;
   GameClient({
     required this.gameId, 
     required this.playerId,
     required this.onGameStarted,
+    this.userData
   }) {
     final url = 'wss://oligarch-websocket-server-v7xkx4cedq-ez.a.run.app/ws/$gameId/$playerId';
     _channel = WebSocketChannel.connect(Uri.parse(url));
@@ -32,20 +33,27 @@ class GameClient {
   }
 
   void _handleServerEvent(Map<String, dynamic> data) {
-    final event = data['event'];
+    final int statusCode = data['statusCode'];
 
-    switch (event) {
-      case 'gameStarted':
-        print("Game Stared: $data");
+    switch (statusCode) {
+      case 201:
+        debugPrint("Game Stared: $data");
+        userData = [statusCode, data["data"].toList()];
         onGameStarted();
         break;
-      // Add other cases here later (e.g., 'player_moved', 'rent_paid')
+      case 202:
+        debugPrint("Player moved: $data");
+        userData = [statusCode, data["data"].toList()];
+        break;
     }
   }
 
-  // Action for Player 1 to trigger
   void startGame() {
     _channel.sink.add(jsonEncode({"action": "startGame"}));
+  }
+
+  void sendMessagetoServer(Map<String, dynamic> msg) {
+    _channel.sink.add(jsonEncode(msg));
   }
 
   void leaveGame() {

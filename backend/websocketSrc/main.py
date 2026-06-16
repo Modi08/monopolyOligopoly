@@ -10,6 +10,7 @@ if not firebase_admin._apps:
 app = FastAPI()
 db = firestore.Client(database="oligarch-firestore-db")
 
+
 class ConnectionManager:
     def __init__(self):
         self.active_games: dict[str, list[WebSocket]] = {}
@@ -30,31 +31,67 @@ class ConnectionManager:
             for connection in self.active_games[gameId]:
                 await connection.send_json(message)
 
+    async def broadcast_specific_user(self, message: dict, gameId: str, playerId: str):
+        if gameId in self.active_games and playerId in self.active_games[gameId]:
+            connection = self.active_games[gameId][playerId]
+            await connection.send_json(message)
+
+
 manager = ConnectionManager()
 
+
 @app.websocket("/ws/{gameId}/{username}")
-async def websocket_endpoint(websocket: WebSocket, gameId: str, username: str):
+async def websocket_endpoint(websocket: WebSocket, gameId: str):
     await manager.connect(websocket, gameId)
-    doc = db.collection(gameId).document("players")
+    docPlayer = db.collection(gameId).document("players")
+    docGameDetails = db.collection(gameId).document("gameDetails")
 
     try:
         while True:
             data = await websocket.receive_json()
             action = data.get("action")
-            
+
             match action:
                 case "startGame":
-                    playersIds = list(doc.get().to_dict().keys())
+                    playersIds = list(docPlayer.get().to_dict().keys())
                     random.shuffle(playersIds)
 
                     for index in range(len(playersIds)):
-                        print(index)
-                        print(playersIds, playersIds[index])
-                        doc.update({
-                            f"{index+1}.playerTurn": int(playersIds[index])
-                        })
+                        docPlayer.update(
+                            {f"{index+1}.playerTurn": int(playersIds[index])}
+                        )
 
-                    await manager.broadcast_to_game({"event": "gameStarted", "data": playersIds}, gameId)
-            
+                        docGameDetails.set({"playerOrder": playersIds})
+
+                    await manager.broadcast_to_game(
+                        {"event": "gameStarted", "data": playersIds, "statusCode": 201},
+                        gameId,
+                    )
+
+                case "rolledDice":
+                    playerId = action.get("playerId")
+                    oldPosition = action.get("oldPosition")
+                    newPosition = action.get("newPosition")
+                    
+                    playerTurn = docPlayer.get(playerId).to_dict().get("playerTurn")
+                    playerOrder = docGameDetails.get("playerOrder")
+
+                    docPlayer.update({f"{playerId}.position": newPosition})
+
+                    await manager.broadcast_to_game(
+                        {
+                            "event": "diceRollCompleted",
+                            "data": [playerId, newPosition, oldPosition],
+                            "statusCode": 202,
+                        },
+                        gameId,
+                    )
+
+                    await manager.broadcast_specific_user(
+                        {"event": "startDiceRoll", "statusCode": 203},
+                        gameId,
+                        playerOrder[playerTurn],
+                    )
+
     except WebSocketDisconnect:
         manager.disconnect(websocket, gameId)
