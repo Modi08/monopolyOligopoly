@@ -70,7 +70,6 @@ class _DashboardState extends State<Dashboard> {
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
             crossAxisAlignment: CrossAxisAlignment.center,
-            spacing: widget.width * 0.075,
 
             children: [
               Column(
@@ -86,6 +85,7 @@ class _DashboardState extends State<Dashboard> {
                   ),
                 ],
               ),
+              const Spacer(),
               AvatarCircleCard(
                 height: widget.height,
                 width: widget.width,

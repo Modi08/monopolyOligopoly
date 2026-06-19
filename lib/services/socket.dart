@@ -11,12 +11,12 @@ class GameClient {
   final String gameId;
   final String playerId;
   final VoidCallback onGameStarted;
-  dynamic userData;
+  final ValueNotifier<dynamic> userData;
   GameClient({
     required this.gameId, 
     required this.playerId,
     required this.onGameStarted,
-    this.userData
+    required this.userData
   }) {
     final url = 'wss://oligarch-websocket-server-v7xkx4cedq-ez.a.run.app/ws/$gameId/$playerId';
     _channel = WebSocketChannel.connect(Uri.parse(url));
@@ -38,12 +38,12 @@ class GameClient {
     switch (statusCode) {
       case 201:
         debugPrint("Game Stared: $data");
-        userData = [statusCode, data["data"].toList()];
+        userData.value = [statusCode, data["data"].toList()];
         onGameStarted();
         break;
       case 202:
         debugPrint("Player moved: $data");
-        userData = [statusCode, data["data"].toList()];
+        userData.value = [statusCode, data["data"].toList()];
         break;
     }
   }

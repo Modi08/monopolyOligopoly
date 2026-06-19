@@ -77,6 +77,8 @@ Future<void> joinGame(
     );
 
     setCurrentPlayerData(player);
+
+    await database.clearAllPLayers();
     await database.insertPlayer(player);
 
     Navigator.pushNamed(context, '/waitingScreen');
@@ -122,6 +124,7 @@ Future<void> createGame(
     );
     setCurrentPlayerData(player);
 
+    await database.clearAllPLayers();
     await database.insertPlayer(player);
 
     Navigator.pushNamed(context, "/waitingScreen");
@@ -178,7 +181,7 @@ class _JoinScreenState extends State<JoinScreen> {
               ),
               SizedBox(height: widget.height * 0.035),
               Container(
-                width: widget.width * 0.6,
+                width: widget.width * 0.7,
                 height: widget.height * 0.06,
                 decoration: BoxDecoration(
                   color: theme.colorScheme.onSurface,
@@ -197,7 +200,7 @@ class _JoinScreenState extends State<JoinScreen> {
                           });
                         },
                         child: Container(
-                          width: widget.width * 0.25,
+                          width: widget.width * 0.3,
                           height: widget.height * 0.06,
                           decoration: BoxDecoration(
                             color: isJoinGamepage
@@ -228,7 +231,7 @@ class _JoinScreenState extends State<JoinScreen> {
                           });
                         },
                         child: Container(
-                          width: widget.width * 0.3,
+                          width: widget.width * 0.35,
                           height: widget.height * 0.06,
                           decoration: BoxDecoration(
                             color: isJoinGamepage
@@ -270,7 +273,7 @@ class _JoinScreenState extends State<JoinScreen> {
                 controller: usernameController,
                 hintText: 'Enter Your Username',
                 icon: Icons.person,
-                maxLength: 10,
+                maxLength: 8,
               ),
               SizedBox(height: widget.height * 0.1),
               Row(

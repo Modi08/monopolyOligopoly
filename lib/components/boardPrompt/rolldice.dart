@@ -24,9 +24,8 @@ class RollDice extends StatefulWidget {
 
 class _RollDiceState extends State<RollDice> {
   int currentFace1 = 1;
-  double turns1 = 0.0;
+  double turns = 0.0;
   int currentFace2 = 1;
-  double turns2 = 0.0;
 
   bool isRolling = false;
   bool hasRolled = false;
@@ -55,8 +54,7 @@ class _RollDiceState extends State<RollDice> {
 
     setState(() {
       isRolling = true;
-      turns1 += 2.0;
-      turns2 += 2.0;
+      turns += 2.0;
     });
 
     int ticks = 0;
@@ -94,7 +92,7 @@ class _RollDiceState extends State<RollDice> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             AnimatedRotation(
-              turns: turns1,
+              turns: turns,
               duration: const Duration(seconds: 1),
               curve: Curves.easeOutCirc,
               child: Icon(
@@ -104,11 +102,11 @@ class _RollDiceState extends State<RollDice> {
               ),
             ),
             AnimatedRotation(
-              turns: turns1,
+              turns: turns,
               duration: const Duration(seconds: 1),
               curve: Curves.easeOutCirc,
               child: Icon(
-                _getDiceIcon(currentFace1),
+                _getDiceIcon(currentFace2),
                 size: 80,
                 color: theme.colorScheme.onSurface,
               ),
@@ -139,9 +137,8 @@ class _RollDiceState extends State<RollDice> {
                 onPressed: () {
                   widget.socketClient.sendMessagetoServer({
                     "action": "rolledDice",
-                    "playerId": widget.currentPlayer!.id,
-                    "oldPostion": widget.currentPlayer!.position,
-                    "newPostion":
+                    "oldPosition": widget.currentPlayer!.position,
+                    "newPosition":
                         widget.currentPlayer!.position +
                         currentFace1 +
                         currentFace2,

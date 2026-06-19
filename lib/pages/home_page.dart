@@ -88,6 +88,66 @@ class _HomePageState extends State<HomePage> {
     return;
   }
 
+  void onSocketDataReceived() {
+    final dynamic userData = socketClient.userData.value;
+
+    if (userData == null) return;
+
+    int statusCode = userData[0];
+      debugPrint(statusCode.toString());
+      switch (statusCode) {
+        case 201:
+          setState(() {
+            playerOrder = userData[1]
+                .map<int>((item) => int.parse(item))
+                .toList();
+
+            for (var (index, item) in playerOrder.indexed) {
+              if (widget.currentPlayer.id == item) {
+                widget.currentPlayer.playerTurn = index + 1;
+              }
+            }
+            showPrompt = true;
+            promptInputData = widget.currentPlayer.playerTurn;
+            promptColor = null;
+          });
+
+        case 202:
+          widget.database
+              .getParamofPlayer(userData[1][0], "username")
+              .then((username) {
+                setState(() {
+                  showPrompt = true;
+                  promptInputData = [
+                    false,
+                    [
+                      username,
+                      userData[1][1],
+                      userData[1][2],
+                    ],
+                  ];
+                  promptColor = null;
+                  promptType = PromptType.rollDice;
+                });
+              });
+      }
+      debugPrint("success");
+    }
+
+  @override
+  void initState() {
+    super.initState();
+
+    socketClient.userData.addListener(onSocketDataReceived);
+  }
+
+  @override
+  void dispose() {
+    super.dispose();
+
+    socketClient.userData.removeListener(onSocketDataReceived);
+  }
+
   @override
   Widget build(BuildContext context) {
     void promptFunction() {
@@ -107,52 +167,6 @@ class _HomePageState extends State<HomePage> {
     }
 
     final theme = Theme.of(context);
-
-    if (socketClient.userData != null) {
-      int statusCode = socketClient.userData[0];
-      debugPrint(statusCode.toString());
-      switch (statusCode) {
-        case 201:
-          setState(() {
-            playerOrder = socketClient.userData[1]
-                .map<int>((item) => int.parse(item))
-                .toList();
-
-            for (var (index, item) in playerOrder.indexed) {
-              if (widget.currentPlayer.id == item) {
-                widget.currentPlayer.playerTurn = index + 1;
-              }
-            }
-            showPrompt = true;
-            promptInputData = widget.currentPlayer.playerTurn;
-            promptColor = null;
-            socketClient.userData = null;
-          });
-
-        case 202:
-          widget.database
-              .getParamofPlayer(socketClient.userData[1][0], "username")
-              .then((username) {
-                setState(() {
-                  showPrompt = true;
-                  promptInputData = [
-                    false,
-                    [
-                      username,
-                      socketClient.userData[1][1],
-                      socketClient.userData[1][2],
-                    ],
-                  ];
-                  promptColor = null;
-                  promptType = PromptType.rollDice;
-
-                  socketClient.userData = null;
-                });
-              });
-      }
-      debugPrint("success");
-    }
-
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: Stack(

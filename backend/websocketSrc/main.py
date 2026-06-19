@@ -13,22 +13,25 @@ db = firestore.Client(database="oligarch-firestore-db")
 
 class ConnectionManager:
     def __init__(self):
-        self.active_games: dict[str, list[WebSocket]] = {}
+        self.active_games: dict[str, dict[str, WebSocket]] = {}
 
-    async def connect(self, websocket: WebSocket, gameId: str):
+    async def connect(self, websocket: WebSocket, gameId: str, playerId: str):
         await websocket.accept()
         if gameId not in self.active_games:
-            self.active_games[gameId] = []
-        self.active_games[gameId].append(websocket)
+            self.active_games[gameId] = {}
 
-    def disconnect(self, websocket: WebSocket, gameId: str):
-        self.active_games[gameId].remove(websocket)
-        if not self.active_games[gameId]:
-            del self.active_games[gameId]
+        self.active_games[gameId][playerId] = websocket
+
+    def disconnect(self, gameId: str, playerId: str):
+        if gameId in self.active_games and playerId in self.active_games[gameId]:
+            del self.active_games[gameId][playerId]
+            
+            if not self.active_games[gameId]:
+                del self.active_games[gameId]
 
     async def broadcast_to_game(self, message: dict, gameId: str):
         if gameId in self.active_games:
-            for connection in self.active_games[gameId]:
+            for connection in self.active_games[gameId].values():
                 await connection.send_json(message)
 
     async def broadcast_specific_user(self, message: dict, gameId: str, playerId: str):
@@ -40,9 +43,10 @@ class ConnectionManager:
 manager = ConnectionManager()
 
 
-@app.websocket("/ws/{gameId}/{username}")
-async def websocket_endpoint(websocket: WebSocket, gameId: str):
-    await manager.connect(websocket, gameId)
+@app.websocket("/ws/{gameId}/{playerId}")
+async def websocket_endpoint(websocket: WebSocket, gameId: str, playerId: str):
+    await manager.connect(websocket, gameId, playerId)
+
     docPlayer = db.collection(gameId).document("players")
     docGameDetails = db.collection(gameId).document("gameDetails")
 
@@ -69,12 +73,11 @@ async def websocket_endpoint(websocket: WebSocket, gameId: str):
                     )
 
                 case "rolledDice":
-                    playerId = action.get("playerId")
-                    oldPosition = action.get("oldPosition")
-                    newPosition = action.get("newPosition")
-                    
-                    playerTurn = docPlayer.get(playerId).to_dict().get("playerTurn")
-                    playerOrder = docGameDetails.get("playerOrder")
+                    oldPosition = data.get("oldPosition")
+                    newPosition = data.get("newPosition")
+
+                    playerTurn = docPlayer.get().to_dict().get(str(playerId), {}).get("playerTurn")
+                    playerOrder = docGameDetails.get().to_dict().get("playerOrder", [])
 
                     docPlayer.update({f"{playerId}.position": newPosition})
 

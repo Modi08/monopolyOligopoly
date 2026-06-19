@@ -28,7 +28,7 @@ class WaitingPage extends StatefulWidget {
 
 class _WaitingPageState extends State<WaitingPage> {
   List<Player> playerList = [];
-  int count = 0;
+  int count = 1;
   bool gameStarted = false;
 
   void loadUserData() {
@@ -63,9 +63,8 @@ class _WaitingPageState extends State<WaitingPage> {
           Map<String, dynamic> rawPlayersSnapshot =
               snapshot.data() as Map<String, dynamic>;
 
-          if (rawPlayersSnapshot.keys.toList().length > playerList.length) {
+          if (rawPlayersSnapshot.keys.toList().length != playerList.length) {
             List<Player> playersSnapshot = [];
-
             for (var index in rawPlayersSnapshot.keys.toList()) {
               Map<String, dynamic> rawPlayerData = Map<String, dynamic>.from(
                 rawPlayersSnapshot.values.toList()[int.parse(index) - 1],
