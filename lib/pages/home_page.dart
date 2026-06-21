@@ -90,55 +90,69 @@ class _HomePageState extends State<HomePage> {
 
   void onSocketDataReceived() {
     final dynamic userData = socketClient.userData.value;
+    debugPrint("Socket Data Trigger ${userData.toString()}");
 
     if (userData == null) return;
 
     int statusCode = userData[0];
-      debugPrint(statusCode.toString());
-      switch (statusCode) {
-        case 201:
-          setState(() {
-            playerOrder = userData[1]
-                .map<int>((item) => int.parse(item))
-                .toList();
+    debugPrint(statusCode.toString());
+    switch (statusCode) {
+      case 201:
+        setState(() {
+          playerOrder = userData[1]
+              .map<int>((item) => int.parse(item))
+              .toList();
 
-            for (var (index, item) in playerOrder.indexed) {
-              if (widget.currentPlayer.id == item) {
-                widget.currentPlayer.playerTurn = index + 1;
-              }
+          for (var (index, item) in playerOrder.indexed) {
+            if (widget.currentPlayer.id == item) {
+              widget.currentPlayer.playerTurn = index + 1;
             }
-            showPrompt = true;
-            promptInputData = widget.currentPlayer.playerTurn;
-            promptColor = null;
-          });
+          }
 
-        case 202:
-          widget.database
-              .getParamofPlayer(userData[1][0], "username")
-              .then((username) {
-                setState(() {
-                  showPrompt = true;
-                  promptInputData = [
-                    false,
-                    [
-                      username,
-                      userData[1][1],
-                      userData[1][2],
-                    ],
-                  ];
-                  promptColor = null;
-                  promptType = PromptType.rollDice;
-                });
-              });
-      }
-      debugPrint("success");
+          promptInputData = widget.currentPlayer.playerTurn;
+          promptColor = null;
+          promptType = PromptType.turnDisplay;
+        });
+        debugPrint("1: $showPrompt, $promptInputData, $promptColor"); 
+        Future.delayed(const Duration(milliseconds: 300), () {
+          if (mounted) {
+            setState(() => showPrompt = true);
+          }
+        });
+        socketClient.userData.value = null;
+        break;
+
+      case 202:
+        widget.database.getParamofPlayer(userData[1][0], "username").then((
+          username,
+        ) {
+          setState(() {
+            showPrompt = true;
+            promptInputData = [
+              false,
+              [username, userData[1][1], userData[1][2]],
+            ];
+            promptColor = null;
+            promptType = PromptType.rollDice;
+          });
+          Future.delayed(const Duration(milliseconds: 100), () {
+            if (mounted) setState(() => showPrompt = true);
+          });
+        });
+        socketClient.userData.value = null;
+        break;
     }
+    debugPrint("success");
+  }
 
   @override
   void initState() {
     super.initState();
-
     socketClient.userData.addListener(onSocketDataReceived);
+
+    if (socketClient.userData.value != null) {
+      onSocketDataReceived();
+    }
   }
 
   @override
@@ -151,22 +165,23 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     void promptFunction() {
-      setState(() {
-        showPrompt = false;
-      });
-    }
-
-    if (playerOrder.isEmpty) {
-    } else if (playerOrder[0] == widget.currentPlayer.id &&
-        promptType == PromptType.turnDisplay) {
-      setState(() {
-        showPrompt = true;
-        promptType = PromptType.rollDice;
-        promptInputData = [true, widget.currentPlayer];
-      });
+      debugPrint("hello");
+      if (playerOrder[0] == widget.currentPlayer.id &&
+          promptType == PromptType.turnDisplay) {
+        setState(() {
+          showPrompt = true;
+          promptType = PromptType.rollDice;
+          promptInputData = [true, widget.currentPlayer];
+        });
+      } else {
+        setState(() {
+          showPrompt = false;
+        });
+      }
     }
 
     final theme = Theme.of(context);
+    debugPrint("2: $showPrompt, $promptInputData, $promptColor");
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: Stack(
@@ -191,18 +206,16 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
-          showPrompt
-              ? BoardActionPrompt(
-                  isVisible: showPrompt,
-                  width: widget.width,
-                  color: null,
-                  onButtonPress: promptFunction,
-                  inputData: promptInputData,
-                  promptType: promptType,
-                  height: widget.height,
-                  socketClient: socketClient,
-                )
-              : SizedBox(),
+          BoardActionPrompt(
+            isVisible: showPrompt,
+            width: widget.width,
+            color: null,
+            onButtonPress: promptFunction,
+            inputData: promptInputData,
+            promptType: promptType,
+            height: widget.height,
+            socketClient: socketClient,
+          ),
         ],
       ),
 

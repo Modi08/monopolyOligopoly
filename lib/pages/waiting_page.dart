@@ -182,7 +182,6 @@ class _WaitingPageState extends State<WaitingPage> {
                         locator<GameClient>().startGame();
 
                         gameStarted = true;
-                        Navigator.pushNamed(context, "/HomePage");
                       });
                     },
                     child: Text(

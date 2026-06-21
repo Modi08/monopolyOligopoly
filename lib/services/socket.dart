@@ -11,12 +11,11 @@ class GameClient {
   final String gameId;
   final String playerId;
   final VoidCallback onGameStarted;
-  final ValueNotifier<dynamic> userData;
+  final ValueNotifier<dynamic> userData = ValueNotifier(null);
   GameClient({
     required this.gameId, 
     required this.playerId,
     required this.onGameStarted,
-    required this.userData
   }) {
     final url = 'wss://oligarch-websocket-server-v7xkx4cedq-ez.a.run.app/ws/$gameId/$playerId';
     _channel = WebSocketChannel.connect(Uri.parse(url));

@@ -35,6 +35,7 @@ class _BoardActionPromptState extends State<BoardActionPrompt> {
   Widget buildPromptContent(ThemeData theme) {
     switch (widget.promptType) {
       case PromptType.turnDisplay:
+        debugPrint(widget.inputData.toString());
         return TurnDisplay(
           activeColor: widget.color ?? theme.colorScheme.tertiary,
           playerTurn: widget.inputData,
