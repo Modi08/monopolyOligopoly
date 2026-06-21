@@ -11,11 +11,10 @@ class DatabaseServicePlayer {
 
   // 2. Open the database (or create it if it doesn't exist)
   Future<Database> get database async {
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, 'oligarch_db.db');
+    if (_database != null) return _database!;
 
-    await deleteDatabase(path);
-    //if (_database != null) return _database!;
+    //await deleteDatabase(path);
+    
 
     _database = await _initDB('oligarch_db.db');
     return _database!;
@@ -78,7 +77,7 @@ class DatabaseServicePlayer {
     );
 
     if (maps.isNotEmpty) {
-      return Player.fromMap(maps.first, isDatabase: true);
+      return Player.fromMap(maps.first);
     } else {
       return null;
     }
@@ -104,7 +103,7 @@ class DatabaseServicePlayer {
     final db = await instance.database;
     final maps = await db.query('players'); // Returns a List of Maps
 
-    return maps.map((json) => Player.fromMap(json, isDatabase: true)).toList();
+    return maps.map((json) => Player.fromMap(json)).toList();
   }
 
   Future<int> updatePlayer(Player player) async {

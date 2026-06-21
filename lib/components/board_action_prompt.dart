@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:monopolyoligarch/components/boardPrompt/rolldice.dart';
+import 'package:monopolyoligarch/components/boardPrompt/showplayermovment.dart';
 import 'package:monopolyoligarch/components/boardPrompt/turndisplay.dart';
 import 'package:monopolyoligarch/services/socket.dart';
 
@@ -43,21 +44,22 @@ class _BoardActionPromptState extends State<BoardActionPrompt> {
         );
 
       case PromptType.rollDice:
-      if (widget.inputData[0]) {
-        return RollDice(
-          onRollComplete: widget.onButtonPress,
-          height: widget.height,  
-          currentPlayer: widget.inputData[1],
-          socketClient: widget.socketClient,
-        );
-      } else {
-        return RollDice(
-          onRollComplete: widget.onButtonPress,
-          height: widget.height,
-          currentPlayer: widget.inputData[1],
-          socketClient: widget.socketClient,
-        );
-      }
+        if (widget.inputData[0]) {
+          return RollDice(
+            onRollComplete: widget.onButtonPress,
+            height: widget.height,
+            currentPlayer: widget.inputData[1],
+            socketClient: widget.socketClient,
+          );
+        } else {
+          debugPrint("HELLO");
+          return ShowPlayerMovment(
+            height: widget.height,
+            username: widget.inputData[1][0],
+            oldPosition: widget.inputData[1][2],
+            newPosition: widget.inputData[1][1],
+          );
+        }
     }
   }
 

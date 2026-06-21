@@ -38,6 +38,7 @@ Future<void> joinGame(
   void Function(Player) setCurrentPlayerData,
 ) async {
   try {
+    await database.clearAllPLayers();
     final callable = functions.httpsCallable('joinGameFunction');
     final response = await callable.call({
       'gameId': gameId,
@@ -78,7 +79,6 @@ Future<void> joinGame(
 
     setCurrentPlayerData(player);
 
-    await database.clearAllPLayers();
     await database.insertPlayer(player);
 
     Navigator.pushNamed(context, '/waitingScreen');

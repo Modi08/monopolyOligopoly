@@ -53,17 +53,77 @@ class ShowPlayerMovment extends StatelessWidget {
             ],
           ),
         ),
-        Text(properties[oldPosition].name, style: theme.textTheme.displayLarge),
+        properties[oldPosition].color == 0
+            ? Container(
+                padding: EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.inversePrimary,
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                child: Text(
+                  properties[oldPosition].name,
+                  style: theme.textTheme.bodyLarge!.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              )
+            : Container(
+                padding: EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Color(properties[oldPosition].color!),
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                child: Text(
+                  properties[oldPosition].name,
+                  style: theme.textTheme.bodyLarge!.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
         Transform.rotate(
           // Rotates the arrow 45 degrees downwards
-          angle: math.pi / 4,
+          angle: math.pi / 2,
           child: const Icon(
             Icons.arrow_forward_rounded,
             size: 50,
             color: Colors.blue,
           ),
         ),
-        Text(properties[newPosition].name, style: theme.textTheme.displayLarge),
+        properties[newPosition].color == 0
+            ? Container(
+                padding: EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: theme.colorScheme.inversePrimary,
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                child: Text(
+                  properties[oldPosition].name,
+                  style: theme.textTheme.bodyLarge!.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              )
+            : Container(
+                padding: EdgeInsets.all(4),
+                decoration: BoxDecoration(
+                  color: Color(properties[newPosition].color!),
+                  shape: BoxShape.rectangle,
+                  borderRadius: BorderRadius.all(Radius.circular(10)),
+                ),
+                child: Text(
+                  properties[newPosition].name,
+                  style: theme.textTheme.bodyLarge!.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+              ),
       ],
     );
   }

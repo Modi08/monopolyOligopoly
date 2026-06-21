@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:flutter/widgets.dart';
+
 class Player {
   final int id;
   final String name;
@@ -53,39 +55,42 @@ class Player {
     };
   }
 
-  // Convert a Map from SQLite back into a Player object
-  factory Player.fromMap(Map<String, dynamic> map, {bool isDatabase = false}) {
-
-
+  factory Player.fromMap(Map<String, dynamic> map) {
     return Player(
       id: map['id'] as int,
       name: map['username'] as String,
       cash: map['cash'] as int,
       netWorth: map['netWorth'],
-      propertiesOwnershipShares: isDatabase
-          ? jsonDecode(map['propertiesOwnershipShares']) as Map<int, int>
+      propertiesOwnershipShares:
+          map['propertiesOwnershipShares'].runtimeType == String
+          ? processRawMap(jsonDecode(map['propertiesOwnershipShares']))
           : processRawMap(map['propertiesOwnershipShares']),
-      propertiesVotershare: isDatabase
-          ? jsonDecode(map['propertiesVotershare']) as Map<int, int>
-          :processRawMap(map['propertiesVotershare']),
+      propertiesVotershare: map['propertiesVotershare'].runtimeType == String
+          ? processRawMap(jsonDecode(map['propertiesVotershare']))
+          : processRawMap(map['propertiesVotershare']),
       position: map['position'] as int,
-      inJail: isDatabase
-          ? (map['inJail'] == true.toString())
+      inJail: map['inJail'].runtimeType == String
+          ? (map['inJail'] == "true")
           : map['inJail'] as bool,
       jailTurns: map['jailTurns'] as int,
-      activeLoans: isDatabase
-          ? jsonDecode(map['activeLoans']) as Map<int, dynamic>
-          : processRawMap(map['activeLoans']),
+      activeLoans: map['activeLoans'].runtimeType == String
+          ? processRawMap(jsonDecode(map['activeLoans']), isValueDynamic: true)
+          : processRawMap(map['activeLoans'], isValueDynamic: true),
       playerTurn: map['playerTurn'] as int,
-      isCurrentPlayer: isDatabase
-          ? (map['isCurrentPlayer'] == true.toString())
+      isCurrentPlayer: map['isCurrentPlayer'].runtimeType == String
+          ? (map['isCurrentPlayer'] == "true")
           : map['isCurrentPlayer'] as bool,
     );
   }
 
-  static Map<int, int> processRawMap(Map<String, dynamic> rawMap) {
+  static Map<int, int> processRawMap(
+    Map<String, dynamic> rawMap, {
+    bool isValueDynamic = false,
+  }) {
     return rawMap.map((key, value) {
-      return MapEntry(int.parse(key), value as int);
+      return isValueDynamic
+          ? MapEntry(int.parse(key), value as int)
+          : MapEntry(int.parse(key), value as dynamic);
     });
   }
 }

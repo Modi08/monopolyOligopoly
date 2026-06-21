@@ -28,22 +28,18 @@ class WaitingPage extends StatefulWidget {
 
 class _WaitingPageState extends State<WaitingPage> {
   List<Player> playerList = [];
-  int count = 1;
   bool gameStarted = false;
 
   void loadUserData() {
     widget.database.getAllPlayers().then((userList) {
-      if (count == 1) {
-        for (var user in userList) {
-          debugPrint(
-            "=============================================================\n${user.toMap().toString()}\n=============================================================",
-          );
-        }
+      for (var user in userList) {
+        debugPrint(
+          "=============================================================\n${user.toMap().toString()}\n=============================================================",
+        );
       }
 
       setState(() {
         playerList = userList;
-        count++;
       });
     });
   }
@@ -73,6 +69,7 @@ class _WaitingPageState extends State<WaitingPage> {
               rawPlayerData["id"] = int.parse(index);
               rawPlayerData["isCurrentPlayer"] = false;
               Player player = Player.fromMap(rawPlayerData);
+              widget.database.insertPlayer(player);
               playersSnapshot.add(player);
             }
 

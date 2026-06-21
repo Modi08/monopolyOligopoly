@@ -113,7 +113,7 @@ class _HomePageState extends State<HomePage> {
           promptColor = null;
           promptType = PromptType.turnDisplay;
         });
-        debugPrint("1: $showPrompt, $promptInputData, $promptColor"); 
+        debugPrint("1: $showPrompt, $promptInputData, $promptColor");
         Future.delayed(const Duration(milliseconds: 300), () {
           if (mounted) {
             setState(() => showPrompt = true);
@@ -123,22 +123,28 @@ class _HomePageState extends State<HomePage> {
         break;
 
       case 202:
-        widget.database.getParamofPlayer(userData[1][0], "username").then((
-          username,
-        ) {
-          setState(() {
-            showPrompt = true;
-            promptInputData = [
-              false,
-              [username, userData[1][1], userData[1][2]],
-            ];
-            promptColor = null;
-            promptType = PromptType.rollDice;
-          });
-          Future.delayed(const Duration(milliseconds: 100), () {
-            if (mounted) setState(() => showPrompt = true);
-          });
-        });
+        widget.database
+            .getParamofPlayer(int.parse(userData[1][0]), "username")
+            .then((username) {
+              debugPrint(username.toString());
+              if (username == null) {
+                widget.database.getAllPlayers().then((users) {
+                  debugPrint(users.toString());
+                });
+              }
+              setState(() {
+                showPrompt = true;
+                promptInputData = [
+                  false,
+                  [username, userData[1][1], userData[1][2]],
+                ];
+                promptColor = null;
+                promptType = PromptType.rollDice;
+              });
+              Future.delayed(const Duration(milliseconds: 100), () {
+                if (mounted) setState(() => showPrompt = true);
+              });
+            });
         socketClient.userData.value = null;
         break;
     }
@@ -165,7 +171,6 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     void promptFunction() {
-      debugPrint("hello");
       if (playerOrder[0] == widget.currentPlayer.id &&
           promptType == PromptType.turnDisplay) {
         setState(() {
