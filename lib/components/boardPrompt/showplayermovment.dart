@@ -102,7 +102,7 @@ class ShowPlayerMovment extends StatelessWidget {
                   borderRadius: BorderRadius.all(Radius.circular(10)),
                 ),
                 child: Text(
-                  properties[oldPosition].name,
+                  properties[newPosition].name,
                   style: theme.textTheme.bodyLarge!.copyWith(
                     fontWeight: FontWeight.bold,
                     color: Colors.black,

@@ -134,12 +134,9 @@ class _HomePageState extends State<HomePage> {
               }
               setState(() {
                 showPrompt = true;
-                promptInputData = [
-                  false,
-                  [username, userData[1][1], userData[1][2]],
-                ];
+                promptInputData = [username, userData[1][1], userData[1][2]];
                 promptColor = null;
-                promptType = PromptType.rollDice;
+                promptType = PromptType.playerMovement;
               });
               Future.delayed(const Duration(milliseconds: 100), () {
                 if (mounted) setState(() => showPrompt = true);
@@ -176,7 +173,7 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           showPrompt = true;
           promptType = PromptType.rollDice;
-          promptInputData = [true, widget.currentPlayer];
+          promptInputData = widget.currentPlayer;
         });
       } else {
         setState(() {
@@ -200,6 +197,11 @@ class _HomePageState extends State<HomePage> {
               child: GestureDetector(
                 onTap: () {
                   debugPrint("clicked");
+                  if (promptType == PromptType.playerMovement) {
+                    setState(() {
+                      showPrompt = false;
+                    });
+                  }
                 },
                 child: Container(
                   width: double.infinity,

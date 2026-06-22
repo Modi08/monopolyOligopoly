@@ -4,7 +4,7 @@ import 'package:monopolyoligarch/components/boardPrompt/showplayermovment.dart';
 import 'package:monopolyoligarch/components/boardPrompt/turndisplay.dart';
 import 'package:monopolyoligarch/services/socket.dart';
 
-enum PromptType { turnDisplay, rollDice }
+enum PromptType { turnDisplay, rollDice, playerMovement }
 
 class BoardActionPrompt extends StatefulWidget {
   final bool isVisible;
@@ -34,9 +34,10 @@ class BoardActionPrompt extends StatefulWidget {
 
 class _BoardActionPromptState extends State<BoardActionPrompt> {
   Widget buildPromptContent(ThemeData theme) {
-    switch (widget.promptType) {
+    debugPrint(widget.inputData.toString());
+    switch (widget.promptType) {  
       case PromptType.turnDisplay:
-        debugPrint(widget.inputData.toString());
+        
         return TurnDisplay(
           activeColor: widget.color ?? theme.colorScheme.tertiary,
           playerTurn: widget.inputData,
@@ -44,22 +45,19 @@ class _BoardActionPromptState extends State<BoardActionPrompt> {
         );
 
       case PromptType.rollDice:
-        if (widget.inputData[0]) {
-          return RollDice(
-            onRollComplete: widget.onButtonPress,
-            height: widget.height,
-            currentPlayer: widget.inputData[1],
-            socketClient: widget.socketClient,
-          );
-        } else {
-          debugPrint("HELLO");
-          return ShowPlayerMovment(
-            height: widget.height,
-            username: widget.inputData[1][0],
-            oldPosition: widget.inputData[1][2],
-            newPosition: widget.inputData[1][1],
-          );
-        }
+        return RollDice(
+          onRollComplete: widget.onButtonPress,
+          height: widget.height,
+          currentPlayer: widget.inputData,
+          socketClient: widget.socketClient,
+        );
+      case PromptType.playerMovement:
+        return ShowPlayerMovment(
+          height: widget.height,
+          username: widget.inputData[0],
+          oldPosition: widget.inputData[2],
+          newPosition: widget.inputData[1],
+        );
     }
   }
 
