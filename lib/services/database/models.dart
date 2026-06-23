@@ -174,14 +174,9 @@ class Property extends Square {
     );
   }
 
-  static Map<int, int> processRawMap(
-    Map<String, dynamic> rawMap, {
-    bool isValueDynamic = false,
-  }) {
+  static Map<int, int> processRawMap(Map<dynamic, dynamic> rawMap) {
     return rawMap.map((key, value) {
-      return isValueDynamic
-          ? MapEntry(int.parse(key), value as int)
-          : MapEntry(int.parse(key), value as dynamic);
+      return MapEntry(int.parse(key), value as int);
     });
   }
 }

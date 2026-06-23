@@ -66,6 +66,7 @@ class _WaitingPageState extends State<WaitingPage> {
                 rawPlayersSnapshot.values.toList()[int.parse(index) - 1],
               );
 
+              rawPlayerData["id"] = int.parse(index);
               rawPlayerData["isCurrentPlayer"] = int.parse(index) == currentPlayer.id;
               Player player = Player.fromMap(rawPlayerData);
               widget.database.insertPlayer(player);

@@ -58,7 +58,7 @@ async def websocket_endpoint(websocket: WebSocket, gameId: str, playerId: str):
             match action:
                 case "startGame":
                     playersIds = list(docPlayer.get().to_dict().keys())
-                    random.shuffle(playersIds)
+                    #random.shuffle(playersIds)
 
                     for index in range(len(playersIds)):
                         docPlayer.update(

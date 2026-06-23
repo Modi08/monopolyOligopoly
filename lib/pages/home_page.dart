@@ -38,6 +38,7 @@ class _HomePageState extends State<HomePage> {
   List<int> playerOrder = [];
   int turn = 0;
 
+  bool isScreenIgnored = false;
   bool showPrompt = false;
   dynamic promptInputData = 0;
   Color? promptColor;
@@ -80,6 +81,7 @@ class _HomePageState extends State<HomePage> {
               rawPlayersSnapshot.values.toList()[int.parse(index) - 1],
             );
 
+            rawPlayerData["id"] = int.parse(index);
             rawPlayerData["isCurrentPlayer"] =
                 int.parse(index) == currentPlayer.id;
             widget.database.insertPlayer(Player.fromMap(rawPlayerData));
@@ -151,32 +153,37 @@ class _HomePageState extends State<HomePage> {
         debugPrint("1: $showPrompt, $promptInputData, $promptColor");
         Future.delayed(const Duration(milliseconds: 300), () {
           if (mounted) {
-            setState(() => showPrompt = true);
+            setState(() {
+              showPrompt = true;
+              isScreenIgnored = false;
+            });
           }
         });
         socketClient.userData.value = null;
         break;
 
       case 202:
-        widget.database
-            .getParamofPlayer(int.parse(userData[1][0]), "username")
-            .then((username) {
-              debugPrint(username.toString());
-              if (username == null) {
-                widget.database.getAllPlayers().then((users) {
-                  debugPrint(users.toString());
+        if (int.parse(userData[1][0]) != widget.currentPlayer.id) {
+          widget.database
+              .getParamofPlayer(int.parse(userData[1][0]), "username")
+              .then((username) {
+                debugPrint(username.toString());
+                setState(() {
+                  showPrompt = true;
+                  promptInputData = [username, userData[1][1], userData[1][2]];
+                  promptColor = null;
+                  promptType = PromptType.playerMovement;
                 });
-              }
-              setState(() {
-                showPrompt = true;
-                promptInputData = [username, userData[1][1], userData[1][2]];
-                promptColor = null;
-                promptType = PromptType.playerMovement;
+                Future.delayed(const Duration(milliseconds: 100), () {
+                  if (mounted) {
+                    setState(() {
+                      showPrompt = true;
+                      isScreenIgnored = false;
+                    });
+                  }
+                });
               });
-              Future.delayed(const Duration(milliseconds: 100), () {
-                if (mounted) setState(() => showPrompt = true);
-              });
-            });
+        }
         socketClient.userData.value = null;
         break;
     }
@@ -191,7 +198,7 @@ class _HomePageState extends State<HomePage> {
     if (socketClient.userData.value != null) {
       onSocketDataReceived();
     }
-    listentoPlayerStream(widget.gameId, widget.currentPlayer);
+    //listentoPlayerStream(widget.gameId, widget.currentPlayer);
   }
 
   @override
@@ -204,45 +211,53 @@ class _HomePageState extends State<HomePage> {
   @override
   Widget build(BuildContext context) {
     void promptFunction() {
+      debugPrint(
+        "Propmt function: $promptType, ${playerOrder[turn]} == ${widget.currentPlayer.id}",
+      );
       if (playerOrder[0] == widget.currentPlayer.id &&
           promptType == PromptType.turnDisplay) {
         setState(() {
           showPrompt = true;
+          isScreenIgnored = false;
           promptType = PromptType.rollDice;
           promptInputData = widget.currentPlayer;
-          turn++;
         });
       } else if (promptType == PromptType.rollDice &&
-          properties[widget.currentPlayer.position].type == 1 && playerOrder[turn-1] == widget.currentPlayer.id) {
-            setState(() {
-              promptType = PromptType.buyProperty;
-              showPrompt = false;
-            });
+          playerOrder[turn] == widget.currentPlayer.id) {
+        setState(() {
+          promptType = PromptType.buyProperty;
+          showPrompt = false;
+          isScreenIgnored = false;
+        });
       } else {
         setState(() {
           showPrompt = false;
+          isScreenIgnored = true;
         });
       }
     }
 
     final theme = Theme.of(context);
-    debugPrint("2: $showPrompt, $promptInputData, $promptColor");
+    debugPrint(
+      "2: $showPrompt, $promptInputData, $promptColor, ${promptType == PromptType.buyProperty}, $isScreenIgnored",
+    );
     return Scaffold(
       backgroundColor: theme.scaffoldBackgroundColor,
       body: Stack(
         children: [
           pages[selectedScreenIndex],
           IgnorePointer(
-            ignoring: false,
+            ignoring: isScreenIgnored,
             child: AnimatedOpacity(
               duration: const Duration(milliseconds: 400),
-              opacity: showPrompt ? 1.0 : 0.0,
+              opacity: showPrompt || promptType == PromptType.buyProperty ? 1.0 : 0.0,
               child: GestureDetector(
                 onTap: () {
                   debugPrint("clicked");
                   if (promptType == PromptType.playerMovement) {
                     setState(() {
                       showPrompt = false;
+                      isScreenIgnored = true;
                     });
                   }
                 },
@@ -250,12 +265,11 @@ class _HomePageState extends State<HomePage> {
                   width: double.infinity,
                   height: double.infinity,
                   color: Colors.black.withOpacity(0.7),
-                  child: promptType == PromptType.playerMovement
-                      ? BuyProperty(
+                  child: promptType == PromptType.buyProperty
+                      ? ViewSquareCard(
                           height: widget.height,
                           width: widget.width,
-                          square: properties[39],
-                          isProperty: true,
+                          square: properties[widget.currentPlayer.position],
                         )
                       : const SizedBox(),
                 ),

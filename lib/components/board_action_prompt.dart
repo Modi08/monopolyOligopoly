@@ -35,7 +35,6 @@ class BoardActionPrompt extends StatefulWidget {
 
 class _BoardActionPromptState extends State<BoardActionPrompt> {
   Widget buildPromptContent(ThemeData theme) {
-    debugPrint(widget.inputData.toString());
     switch (widget.promptType) {
       case PromptType.turnDisplay:
         return TurnDisplay(

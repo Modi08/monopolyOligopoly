@@ -3,15 +3,20 @@ import 'package:monopolyoligarch/services/database/models.dart';
 
 class PropertyCard extends StatelessWidget {
   final Property property;
+  final bool isProperty;
   final double width;
 
-  const PropertyCard({super.key, required this.property, required this.width});
+  const PropertyCard({
+    super.key,
+    required this.property,
+    required this.width,
+    required this.isProperty,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final headerColor = Color(property.color!);
-
 
     debugPrint(property.rent.length.toString());
     return Card(
@@ -89,7 +94,7 @@ class PropertyCard extends StatelessWidget {
                   const SizedBox(height: 8),
 
                   // Scaled House Rents
-                  property.type == 1
+                  isProperty
                       ? Column(
                           children: [
                             _buildRentRow("With 1 Houses", property.rent[1]),
@@ -119,26 +124,26 @@ class PropertyCard extends StatelessWidget {
                       : SizedBox(),
 
                   const Divider(color: Colors.black54, height: 20),
-                  property.type == 1
-                  ?
-                  Column(
-                    children: [
-                      Text(
-                        "Houses cost \$${property.houseCost} each",
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.black87,
-                        ),
-                      ),
-                      Text(
-                        "Hotels, \$${property.houseCost} plus 4 houses",
-                        style: const TextStyle(
-                          fontSize: 12,
-                          color: Colors.black87,
-                        ),
-                      ),
-                    ],
-                  ) : SizedBox(),
+                  isProperty
+                      ? Column(
+                          children: [
+                            Text(
+                              "Houses cost \$${property.houseCost} each",
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black87,
+                              ),
+                            ),
+                            Text(
+                              "Hotels, \$${property.houseCost} plus 4 houses",
+                              style: const TextStyle(
+                                fontSize: 12,
+                                color: Colors.black87,
+                              ),
+                            ),
+                          ],
+                        )
+                      : SizedBox(),
                 ],
               ),
             ),
