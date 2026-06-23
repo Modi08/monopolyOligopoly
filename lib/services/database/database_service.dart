@@ -14,7 +14,6 @@ class DatabaseServicePlayer {
     if (_database != null) return _database!;
 
     //await deleteDatabase(path);
-    
 
     _database = await _initDB('oligarch_db.db');
     return _database!;
@@ -53,11 +52,26 @@ class DatabaseServicePlayer {
         isCurrentPlayer $textType
       )
     ''');
+
+    await db.execute('''
+      CREATE TABLE properties (
+        id $idType,
+        postion $intType,
+        name $textType,
+        type $intType,
+        color $intType,
+        price $intType,
+        rent $textType,
+        houseCost $intType,
+        houses $intType,
+        ownershipShares $textType,
+        voterShares $textType
+      )
+    ''');
   }
 
-  // --- CRUD OPERATIONS ---
+  // --- Player Operations ---
 
-  // CREATE: Insert a new player
   Future<int> insertPlayer(Player player) async {
     final db = await instance.database;
     return await db.insert(
@@ -70,11 +84,7 @@ class DatabaseServicePlayer {
   Future<Player?> getPlayer(int id) async {
     final db = await instance.database;
 
-    final maps = await db.query(
-      'players',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    final maps = await db.query('players', where: 'id = ?', whereArgs: [id]);
 
     if (maps.isNotEmpty) {
       return Player.fromMap(maps.first);
@@ -86,11 +96,7 @@ class DatabaseServicePlayer {
   Future<dynamic> getParamofPlayer(int id, String param) async {
     final db = await instance.database;
 
-    final maps = await db.query(
-      'players',
-      where: 'id = ?',
-      whereArgs: [id],
-    );
+    final maps = await db.query('players', where: 'id = ?', whereArgs: [id]);
 
     if (maps.isNotEmpty) {
       return maps.first[param];
@@ -121,13 +127,77 @@ class DatabaseServicePlayer {
     return await db.delete('players', where: 'id = ?', whereArgs: [id]);
   }
 
-  Future close() async {
-    final db = await instance.database;
-    db.close();
-  }
-
   Future<void> clearAllPLayers() async {
     final db = await instance.database;
     await db.delete('players');
+  }
+
+  // --- Properties Operations ---
+
+  Future<int> insertProperty(Property property) async {
+    final db = await instance.database;
+    return await db.insert(
+      'properties',
+      property.toMap(isDatabase: true),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<Property?> getProperty(int id) async {
+    final db = await instance.database;
+
+    final maps = await db.query('properties', where: 'id = ?', whereArgs: [id]);
+
+    if (maps.isNotEmpty) {
+      return Property.fromMap(maps.first);
+    } else {
+      return null;
+    }
+  }
+
+  Future<dynamic> getParamofProperty(int id, String param) async {
+    final db = await instance.database;
+
+    final maps = await db.query('properties', where: 'id = ?', whereArgs: [id]);
+
+    if (maps.isNotEmpty) {
+      return maps.first[param];
+    } else {
+      return null;
+    }
+  }
+
+  Future<List<Property>> getAllProperties() async {
+    final db = await instance.database;
+    final maps = await db.query('properties'); // Returns a List of Maps
+
+    return maps.map((json) => Property.fromMap(json)).toList();
+  }
+
+  Future<int> updateProperty(Property property) async {
+    final db = await instance.database;
+    return await db.update(
+      'properties',
+      property.toMap(),
+      where: 'id = ?',
+      whereArgs: [property.id],
+    );
+  }
+
+  Future<int> deleteProperty(int id) async {
+    final db = await instance.database;
+    return await db.delete('properties', where: 'id = ?', whereArgs: [id]);
+  }
+
+  Future<void> clearAllProperties() async {
+    final db = await instance.database;
+    await db.delete('properties');
+  }
+
+  // --- General Operations ---
+
+  Future close() async {
+    final db = await instance.database;
+    db.close();
   }
 }

@@ -90,11 +90,5 @@ async def websocket_endpoint(websocket: WebSocket, gameId: str, playerId: str):
                         gameId,
                     )
 
-                    await manager.broadcast_specific_user(
-                        {"event": "startDiceRoll", "statusCode": 203},
-                        gameId,
-                        playerOrder[playerTurn],
-                    )
-
     except WebSocketDisconnect:
         manager.disconnect(websocket, gameId)

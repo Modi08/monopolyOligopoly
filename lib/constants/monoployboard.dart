@@ -2,13 +2,13 @@ import 'package:monopolyoligarch/services/database/models.dart';
 
 List<Square> properties = [
   Square.fromMap({
-    "postion": 0,
+    "id": 0,
     "name": "GO",
     "type": 0,
     "color": 0x00000000, 
   }),
-  Properties.fromMap({
-    "postion": 1,
+  Property.fromMap({
+    "id": 1,
     "name": "Old Kent Road",
     "type": 1,
     "price": 60,
@@ -20,13 +20,13 @@ List<Square> properties = [
     "voterShares": {},
   }),
   Square.fromMap({
-    "postion": 2,
+    "id": 2,
     "name": "Community Chest",
     "type": 2,
     "color": 0x00000000,
   }),
-  Properties.fromMap({
-    "postion": 3,
+  Property.fromMap({
+    "id": 3,
     "name": "Whitechapel Road",
     "type": 1,
     "price": 60,
@@ -38,13 +38,13 @@ List<Square> properties = [
     "voterShares": {},
   }),
   Square.fromMap({
-    "postion": 4,
+    "id": 4,
     "name": "Income Tax",
     "type": 3,
     "color": 0x00000000,
   }),
-  Properties.fromMap({
-    "postion": 5,
+  Property.fromMap({
+    "id": 5,
     "name": "King's Cross Station",
     "type": 6,
     "price": 200,
@@ -55,8 +55,8 @@ List<Square> properties = [
     "ownershipShares": {},
     "voterShares": {},
   }),
-  Properties.fromMap({
-    "postion": 6,
+  Property.fromMap({
+    "id": 6,
     "name": "The Angel, Islington",
     "type": 1,
     "price": 100,
@@ -68,13 +68,13 @@ List<Square> properties = [
     "voterShares": {},
   }),
   Square.fromMap({
-    "postion": 7,
+    "id": 7,
     "name": "Chance",
     "type": 2,
     "color": 0x00000000,
   }),
-  Properties.fromMap({
-    "postion": 8,
+  Property.fromMap({
+    "id": 8,
     "name": "Euston Road",
     "type": 1,
     "price": 100,
@@ -85,8 +85,8 @@ List<Square> properties = [
     "ownershipShares": {},
     "voterShares": {},
   }),
-  Properties.fromMap({
-    "postion": 9,
+  Property.fromMap({
+    "id": 9,
     "name": "Pentonville Road",
     "type": 1,
     "price": 120,
@@ -98,13 +98,13 @@ List<Square> properties = [
     "voterShares": {},
   }),
   Square.fromMap({
-    "postion": 10,
+    "id": 10,
     "name": "Jail",
     "type": 4,
     "color": 0x00000000,
   }),
-  Properties.fromMap({
-    "postion": 11,
+  Property.fromMap({
+    "id": 11,
     "name": "Pall Mall",
     "type": 1,
     "price": 140,
@@ -115,8 +115,8 @@ List<Square> properties = [
     "ownershipShares": {},
     "voterShares": {},
   }),
-  Properties.fromMap({
-    "postion": 12,
+  Property.fromMap({
+    "id": 12,
     "name": "Electric Company",
     "type": 5,
     "price": 150,
@@ -127,8 +127,8 @@ List<Square> properties = [
     "ownershipShares": {},
     "voterShares": {},
   }),
-  Properties.fromMap({
-    "postion": 13,
+  Property.fromMap({
+    "id": 13,
     "name": "Whitehall",
     "type": 1,
     "price": 140,
@@ -139,8 +139,8 @@ List<Square> properties = [
     "ownershipShares": {},
     "voterShares": {},
   }),
-  Properties.fromMap({
-    "postion": 14,
+  Property.fromMap({
+    "id": 14,
     "name": "Northumberland Avenue",
     "type": 1,
     "price": 160,
@@ -151,8 +151,8 @@ List<Square> properties = [
     "ownershipShares": {},
     "voterShares": {},
   }),
-  Properties.fromMap({
-    "postion": 15,
+  Property.fromMap({
+    "id": 15,
     "name": "Marylebone Station",
     "type": 6,
     "price": 200,
@@ -163,8 +163,8 @@ List<Square> properties = [
     "ownershipShares": {},
     "voterShares": {},
   }),
-  Properties.fromMap({
-    "postion": 16,
+  Property.fromMap({
+    "id": 16,
     "name": "Bow Street",
     "type": 1,
     "price": 180,
@@ -176,13 +176,13 @@ List<Square> properties = [
     "voterShares": {},
   }),
   Square.fromMap({
-    "postion": 17,
+    "id": 17,
     "name": "Community Chest",
     "type": 2,
     "color": 0x00000000,
   }),
-  Properties.fromMap({
-    "postion": 18,
+  Property.fromMap({
+    "id": 18,
     "name": "Marlborough Street",
     "type": 1,
     "price": 180,
@@ -193,8 +193,8 @@ List<Square> properties = [
     "ownershipShares": {},
     "voterShares": {},
   }),
-  Properties.fromMap({
-    "postion": 19,
+  Property.fromMap({
+    "id": 19,
     "name": "Vine Street",
     "type": 1,
     "price": 200,
@@ -206,13 +206,13 @@ List<Square> properties = [
     "voterShares": {},
   }),
   Square.fromMap({
-    "postion": 20,
+    "id": 20,
     "name": "Free Parking",
     "type": 0, 
     "color": 0x00000000,
   }),
-  Properties.fromMap({
-    "postion": 21,
+  Property.fromMap({
+    "id": 21,
     "name": "The Strand",
     "type": 1,
     "price": 220,
@@ -224,13 +224,13 @@ List<Square> properties = [
     "voterShares": {},
   }),
   Square.fromMap({
-    "postion": 22,
+    "id": 22,
     "name": "Chance",
     "type": 2,
     "color": 0x00000000,
   }),
-  Properties.fromMap({
-    "postion": 23,
+  Property.fromMap({
+    "id": 23,
     "name": "Fleet Street",
     "type": 1,
     "price": 220,
@@ -241,8 +241,8 @@ List<Square> properties = [
     "ownershipShares": {},
     "voterShares": {},
   }),
-  Properties.fromMap({
-    "postion": 24,
+  Property.fromMap({
+    "id": 24,
     "name": "Trafalgar Square",
     "type": 1,
     "price": 240,
@@ -253,8 +253,8 @@ List<Square> properties = [
     "ownershipShares": {},
     "voterShares": {},
   }),
-  Properties.fromMap({
-    "postion": 25,
+  Property.fromMap({
+    "id": 25,
     "name": "Fenchurch St. Station",
     "type": 6,
     "price": 200,
@@ -265,8 +265,8 @@ List<Square> properties = [
     "ownershipShares": {},
     "voterShares": {},
   }),
-  Properties.fromMap({
-    "postion": 26,
+  Property.fromMap({
+    "id": 26,
     "name": "Leicester Square",
     "type": 1,
     "price": 260,
@@ -277,8 +277,8 @@ List<Square> properties = [
     "ownershipShares": {},
     "voterShares": {},
   }),
-  Properties.fromMap({
-    "postion": 27,
+  Property.fromMap({
+    "id": 27,
     "name": "Coventry Street",
     "type": 1,
     "price": 260,
@@ -289,8 +289,8 @@ List<Square> properties = [
     "ownershipShares": {},
     "voterShares": {},
   }),
-  Properties.fromMap({
-    "postion": 28,
+  Property.fromMap({
+    "id": 28,
     "name": "Water Works",
     "type": 5,
     "price": 150,
@@ -301,8 +301,8 @@ List<Square> properties = [
     "ownershipShares": {},
     "voterShares": {},
   }),
-  Properties.fromMap({
-    "postion": 29,
+  Property.fromMap({
+    "id": 29,
     "name": "Piccadilly",
     "type": 1,
     "price": 280,
@@ -314,13 +314,13 @@ List<Square> properties = [
     "voterShares": {},
   }),
   Square.fromMap({
-    "postion": 30,
+    "id": 30,
     "name": "Go To Jail",
     "type": 4,
     "color": 0x00000000,
   }),
-  Properties.fromMap({
-    "postion": 31,
+  Property.fromMap({
+    "id": 31,
     "name": "Regent Street",
     "type": 1,
     "price": 300,
@@ -331,8 +331,8 @@ List<Square> properties = [
     "ownershipShares": {},
     "voterShares": {},
   }),
-  Properties.fromMap({
-    "postion": 32,
+  Property.fromMap({
+    "id": 32,
     "name": "Oxford Street",
     "type": 1,
     "price": 300,
@@ -344,13 +344,13 @@ List<Square> properties = [
     "voterShares": {},
   }),
   Square.fromMap({
-    "postion": 33,
+    "id": 33,
     "name": "Community Chest",
     "type": 2,
     "color": 0x00000000,
   }),
-  Properties.fromMap({
-    "postion": 34,
+  Property.fromMap({
+    "id": 34,
     "name": "Bond Street",
     "type": 1,
     "price": 320,
@@ -361,8 +361,8 @@ List<Square> properties = [
     "ownershipShares": {},
     "voterShares": {},
   }),
-  Properties.fromMap({
-    "postion": 35,
+  Property.fromMap({
+    "id": 35,
     "name": "Liverpool St. Station",
     "type": 6,
     "price": 200,
@@ -374,13 +374,13 @@ List<Square> properties = [
     "voterShares": {},
   }),
   Square.fromMap({
-    "postion": 36,
+    "id": 36,
     "name": "Chance",
     "type": 2,
     "color": 0x00000000,
   }),
-  Properties.fromMap({
-    "postion": 37,
+  Property.fromMap({
+    "id": 37,
     "name": "Park Lane",
     "type": 1,
     "price": 350,
@@ -392,13 +392,13 @@ List<Square> properties = [
     "voterShares": {},
   }),
   Square.fromMap({
-    "postion": 38,
+    "id": 38,
     "name": "Super Tax",
     "type": 3,
     "color": 0x00000000,
   }),
-  Properties.fromMap({
-    "postion": 39,
+  Property.fromMap({
+    "id": 39,
     "name": "Mayfair",
     "type": 1,
     "price": 400,

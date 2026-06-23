@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:monopolyoligarch/components/boardPrompt/buyproperty.dart';
 import 'package:monopolyoligarch/components/boardPrompt/rolldice.dart';
 import 'package:monopolyoligarch/components/boardPrompt/showplayermovment.dart';
 import 'package:monopolyoligarch/components/boardPrompt/turndisplay.dart';
 import 'package:monopolyoligarch/services/socket.dart';
 
-enum PromptType { turnDisplay, rollDice, playerMovement }
+enum PromptType { turnDisplay, rollDice, playerMovement, buyProperty }
 
 class BoardActionPrompt extends StatefulWidget {
   final bool isVisible;
@@ -35,9 +36,8 @@ class BoardActionPrompt extends StatefulWidget {
 class _BoardActionPromptState extends State<BoardActionPrompt> {
   Widget buildPromptContent(ThemeData theme) {
     debugPrint(widget.inputData.toString());
-    switch (widget.promptType) {  
+    switch (widget.promptType) {
       case PromptType.turnDisplay:
-        
         return TurnDisplay(
           activeColor: widget.color ?? theme.colorScheme.tertiary,
           playerTurn: widget.inputData,
@@ -51,6 +51,7 @@ class _BoardActionPromptState extends State<BoardActionPrompt> {
           currentPlayer: widget.inputData,
           socketClient: widget.socketClient,
         );
+
       case PromptType.playerMovement:
         return ShowPlayerMovment(
           height: widget.height,
@@ -58,6 +59,9 @@ class _BoardActionPromptState extends State<BoardActionPrompt> {
           oldPosition: widget.inputData[2],
           newPosition: widget.inputData[1],
         );
+    
+      default:
+        return const SizedBox();
     }
   }
 

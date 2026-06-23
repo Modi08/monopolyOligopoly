@@ -1,6 +1,8 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:monopolyoligarch/components/boardPrompt/buyproperty.dart';
 import 'package:monopolyoligarch/components/board_action_prompt.dart';
+import 'package:monopolyoligarch/constants/monoployboard.dart';
 import 'package:monopolyoligarch/pages/screens/accountActions.dart';
 import 'package:monopolyoligarch/pages/screens/dashboard.dart';
 import 'package:monopolyoligarch/pages/screens/portfolio.dart';
@@ -14,6 +16,7 @@ class HomePage extends StatefulWidget {
   final Player currentPlayer;
   final FirebaseFirestore firestoreInstance;
   final DatabaseServicePlayer database;
+  final int gameId;
   const HomePage({
     super.key,
     required this.width,
@@ -21,6 +24,7 @@ class HomePage extends StatefulWidget {
     required this.currentPlayer,
     required this.firestoreInstance,
     required this.database,
+    required this.gameId,
   });
 
   @override
@@ -32,6 +36,7 @@ class _HomePageState extends State<HomePage> {
   GameClient socketClient = locator<GameClient>();
 
   List<int> playerOrder = [];
+  int turn = 0;
 
   bool showPrompt = false;
   dynamic promptInputData = 0;
@@ -63,26 +68,56 @@ class _HomePageState extends State<HomePage> {
         .listen((DocumentSnapshot snapshot) {
           if (!snapshot.exists) {
             listentoPlayerStream(gameId, currentPlayer);
+            debugPrint("Stopped listening to Player Stream");
             return;
           }
 
           Map<String, dynamic> rawPlayersSnapshot =
               snapshot.data() as Map<String, dynamic>;
 
-          List<Player> playersSnapshot = [];
-
           for (var index in rawPlayersSnapshot.keys.toList()) {
             Map<String, dynamic> rawPlayerData = Map<String, dynamic>.from(
               rawPlayersSnapshot.values.toList()[int.parse(index) - 1],
             );
 
-            rawPlayerData["id"] = int.parse(index);
-            rawPlayerData["isCurrentPlayer"] = false;
-            Player player = Player.fromMap(rawPlayerData);
-            playersSnapshot.add(player);
+            rawPlayerData["isCurrentPlayer"] =
+                int.parse(index) == currentPlayer.id;
+            widget.database.insertPlayer(Player.fromMap(rawPlayerData));
           }
 
           listentoPlayerStream(gameId, currentPlayer);
+          debugPrint("Stopped listening to Player Stream");
+          return;
+        });
+    return;
+  }
+
+  void listentoPropertyStream(int gameId) {
+    debugPrint("listening to Property Stream");
+    widget.firestoreInstance
+        .collection(gameId.toString())
+        .doc("properties")
+        .snapshots()
+        .listen((DocumentSnapshot snapshot) {
+          if (!snapshot.exists) {
+            listentoPropertyStream(gameId);
+            debugPrint("Stopped listening to Property Stream");
+            return;
+          }
+
+          Map<String, dynamic> rawPropertiesSnapshot =
+              snapshot.data() as Map<String, dynamic>;
+
+          for (var index in rawPropertiesSnapshot.keys.toList()) {
+            Map<String, dynamic> rawPropertyData = Map<String, dynamic>.from(
+              rawPropertiesSnapshot.values.toList()[int.parse(index) - 1],
+            );
+
+            widget.database.insertProperty(Property.fromMap(rawPropertyData));
+          }
+
+          listentoPropertyStream(gameId);
+          debugPrint("Stopped listening to Property Stream");
           return;
         });
     return;
@@ -156,6 +191,7 @@ class _HomePageState extends State<HomePage> {
     if (socketClient.userData.value != null) {
       onSocketDataReceived();
     }
+    listentoPlayerStream(widget.gameId, widget.currentPlayer);
   }
 
   @override
@@ -174,7 +210,14 @@ class _HomePageState extends State<HomePage> {
           showPrompt = true;
           promptType = PromptType.rollDice;
           promptInputData = widget.currentPlayer;
+          turn++;
         });
+      } else if (promptType == PromptType.rollDice &&
+          properties[widget.currentPlayer.position].type == 1 && playerOrder[turn-1] == widget.currentPlayer.id) {
+            setState(() {
+              promptType = PromptType.buyProperty;
+              showPrompt = false;
+            });
       } else {
         setState(() {
           showPrompt = false;
@@ -190,7 +233,7 @@ class _HomePageState extends State<HomePage> {
         children: [
           pages[selectedScreenIndex],
           IgnorePointer(
-            ignoring: !showPrompt,
+            ignoring: false,
             child: AnimatedOpacity(
               duration: const Duration(milliseconds: 400),
               opacity: showPrompt ? 1.0 : 0.0,
@@ -206,9 +249,15 @@ class _HomePageState extends State<HomePage> {
                 child: Container(
                   width: double.infinity,
                   height: double.infinity,
-                  color: Colors.black.withOpacity(
-                    0.7,
-                  ), // Dims the background beautifully
+                  color: Colors.black.withOpacity(0.7),
+                  child: promptType == PromptType.playerMovement
+                      ? BuyProperty(
+                          height: widget.height,
+                          width: widget.width,
+                          square: properties[39],
+                          isProperty: true,
+                        )
+                      : const SizedBox(),
                 ),
               ),
             ),

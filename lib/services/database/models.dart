@@ -94,33 +94,33 @@ class Player {
 }
 
 class Square {
-  final int postion;
+  final int id;
   final String name;
   final int type;
-  final int? color;
+  final int color;
 
   Square({
-    required this.postion,
+    required this.id,
     required this.name,
     required this.type,
     required this.color,
   });
 
   Map<String, dynamic> toMap() {
-    return {'postion': postion, 'name': name, 'type': type, 'color': color};
+    return {'id': id, 'name': name, 'type': type, 'color': color};
   }
 
   factory Square.fromMap(Map<String, dynamic> map) {
     return Square(
-      postion: map['postion'] as int,
+      id: map['id'] as int,
       name: map['name'] as String,
       type: map['type'] as int,
-      color: map['color'] as int?,
+      color: map['color'] as int,
     );
   }
 }
 
-class Properties extends Square {
+class Property extends Square {
   final int price;
   final List<int> rent;
   final int houseCost;
@@ -128,14 +128,11 @@ class Properties extends Square {
   final Map<int, int> ownershipShares;
   final Map<int, int> voterShares;
 
-  Properties({
-    // Use 'super' to pass these values up to the Square class!
-    required super.postion,
+  Property({
+    required super.id,
     required super.name,
     required super.type,
     required super.color,
-
-    // These belong to Properties specifically
     required this.price,
     required this.rent,
     required this.houseCost,
@@ -145,26 +142,26 @@ class Properties extends Square {
   });
 
   @override
-  Map<String, dynamic> toMap() {
-    // 1. Grab the base map from the Square class
+  Map<String, dynamic> toMap({bool isDatabase = false}) {
     final map = super.toMap();
 
-    // 2. Add the specific property fields to it
     map.addAll({
       'price': price,
       'rent': rent,
       'houseCost': houseCost,
       'houses': houses,
-      'ownershipShares': ownershipShares,
-      'voterShares': voterShares,
+      'ownershipShares': isDatabase
+          ? ownershipShares.toString()
+          : ownershipShares,
+      'voterShares': isDatabase ? voterShares.toString() : voterShares,
     });
 
     return map;
   }
 
-  factory Properties.fromMap(Map<String, dynamic> map) {
-    return Properties(
-      postion: map['postion'] as int,
+  factory Property.fromMap(Map<String, dynamic> map) {
+    return Property(
+      id: map['id'] as int,
       name: map['name'] as String,
       type: map['type'] as int,
       color: map['color'] as int,
@@ -172,8 +169,19 @@ class Properties extends Square {
       houseCost: map['houseCost'] as int,
       houses: map['houses'] as int,
       rent: List<int>.from(map['rent']),
-      ownershipShares: Map<int, int>.from(map['ownershipShares']),
-      voterShares: Map<int, int>.from(map['voterShares']),
+      ownershipShares: processRawMap(map['ownershipShares']),
+      voterShares: processRawMap(map['voterShares']),
     );
+  }
+
+  static Map<int, int> processRawMap(
+    Map<String, dynamic> rawMap, {
+    bool isValueDynamic = false,
+  }) {
+    return rawMap.map((key, value) {
+      return isValueDynamic
+          ? MapEntry(int.parse(key), value as int)
+          : MapEntry(int.parse(key), value as dynamic);
+    });
   }
 }
