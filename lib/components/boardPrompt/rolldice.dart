@@ -136,13 +136,12 @@ class _RollDiceState extends State<RollDice> {
             : ElevatedButton(
                 onPressed: () {
                   widget.socketClient.sendMessagetoServer({
-                    "action": "rolledDice",
                     "oldPosition": widget.currentPlayer!.position,
                     "newPosition":
                         widget.currentPlayer!.position +
                         currentFace1 +
                         currentFace2,
-                  });
+                  }, "rolledDice");
                   widget.currentPlayer!.position =
                       widget.currentPlayer!.position +
                       currentFace1 +

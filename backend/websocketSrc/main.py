@@ -1,6 +1,7 @@
 from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from google.cloud import firestore
 import firebase_admin
+import json
 import random
 from firebase_admin import initialize_app
 
@@ -25,7 +26,7 @@ class ConnectionManager:
     def disconnect(self, gameId: str, playerId: str):
         if gameId in self.active_games and playerId in self.active_games[gameId]:
             del self.active_games[gameId][playerId]
-            
+
             if not self.active_games[gameId]:
                 del self.active_games[gameId]
 
@@ -49,6 +50,7 @@ async def websocket_endpoint(websocket: WebSocket, gameId: str, playerId: str):
 
     docPlayer = db.collection(gameId).document("players")
     docGameDetails = db.collection(gameId).document("gameDetails")
+    docProperty = db.collection(gameId).document("properties")
 
     try:
         while True:
@@ -76,8 +78,8 @@ async def websocket_endpoint(websocket: WebSocket, gameId: str, playerId: str):
                     oldPosition = data.get("oldPosition")
                     newPosition = data.get("newPosition")
 
-                    playerTurn = docPlayer.get().to_dict().get(str(playerId), {}).get("playerTurn")
-                    playerOrder = docGameDetails.get().to_dict().get("playerOrder", [])
+                    # playerTurn = docPlayer.get().to_dict().get(str(playerId), {}).get("playerTurn")
+                    # playerOrder = docGameDetails.get().to_dict().get("playerOrder", [])
 
                     docPlayer.update({f"{playerId}.position": newPosition})
 
@@ -86,6 +88,40 @@ async def websocket_endpoint(websocket: WebSocket, gameId: str, playerId: str):
                             "event": "diceRollCompleted",
                             "data": [playerId, newPosition, oldPosition],
                             "statusCode": 202,
+                        },
+                        gameId,
+                    )
+
+                case "buyProperty":
+                    propertyId = data.get("propertyId")
+                    propertyData = json.loads(data.get("propertyData"))
+
+                    #Properties Datebase Updates
+
+                    docProperty.set({propertyId: propertyData})
+                    
+
+                    #Player Datebase Updates
+
+                    playerPropertiesOwnership = json.loads(docPlayer.get().to_dict().get(str(playerId), {}).get("propertiesOwnershipShares"))
+                    playerPropertiesOwnership[propertyId] = 100
+
+                    playerCash = json.loads(docPlayer.get().to_dict().get(str(playerId), {}).get("cash"))
+                    playerCash = playerCash-propertyData["price"]
+
+                    playerPropertiesVoter = json.loads(docPlayer.get().to_dict().get(str(playerId), {}).get("propertiesVoterShares"))
+                    playerPropertiesVoter[propertyId] = 100
+
+                    docPlayer.update({f"{playerId}.propertiesOwnershipShares": playerPropertiesOwnership})
+                    docPlayer.update({f"{playerId}.propertiesVoterShares": playerPropertiesVoter})
+                    docPlayer.update({f"{playerId}.cash": playerCash})
+
+
+                    await manager.broadcast_to_game(
+                        {
+                            "event": "PropertyBought",
+                            "data": [playerId, propertyId],
+                            "statusCode": 203,
                         },
                         gameId,
                     )

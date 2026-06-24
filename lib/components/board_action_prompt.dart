@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
-import 'package:monopolyoligarch/components/boardPrompt/buyproperty.dart';
 import 'package:monopolyoligarch/components/boardPrompt/rolldice.dart';
+import 'package:monopolyoligarch/components/boardPrompt/showplayeraquisition.dart';
 import 'package:monopolyoligarch/components/boardPrompt/showplayermovment.dart';
 import 'package:monopolyoligarch/components/boardPrompt/turndisplay.dart';
 import 'package:monopolyoligarch/services/socket.dart';
 
-enum PromptType { turnDisplay, rollDice, playerMovement, buyProperty }
+enum PromptType {
+  turnDisplay,
+  rollDice,
+  playerMovement,
+  buyProperty,
+  playerBoughtProperty,
+}
 
 class BoardActionPrompt extends StatefulWidget {
   final bool isVisible;
@@ -58,9 +64,18 @@ class _BoardActionPromptState extends State<BoardActionPrompt> {
           oldPosition: widget.inputData[2],
           newPosition: widget.inputData[1],
         );
-    
+
+      case PromptType.playerBoughtProperty:
+        return ShowPlayerAcquisition(
+          username: widget.inputData[0],
+          propertyId: widget.inputData[1],
+          height: widget.height,
+        );
+
       default:
-        return const SizedBox();
+        throw Exception(
+          "${widget.promptType} is not supposed top tigger this function",
+        );
     }
   }
 

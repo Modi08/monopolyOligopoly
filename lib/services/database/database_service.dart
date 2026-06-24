@@ -2,12 +2,12 @@ import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'models.dart';
 
-class DatabaseServicePlayer {
+class DatabaseService {
   // 1. Create the Singleton instance
-  static final DatabaseServicePlayer instance = DatabaseServicePlayer._init();
+  static final DatabaseService instance = DatabaseService._init();
   static Database? _database;
 
-  DatabaseServicePlayer._init();
+  DatabaseService._init();
 
   // 2. Open the database (or create it if it doesn't exist)
   Future<Database> get database async {
@@ -43,7 +43,7 @@ class DatabaseServicePlayer {
         cash $intType,
         netWorth $intType,
         propertiesOwnershipShares $textType,
-        propertiesVotershare $textType,
+        propertiesVoterShares $textType,
         position $intType,
         inJail $intType,
         jailTurns $intType,
@@ -122,6 +122,17 @@ class DatabaseServicePlayer {
     );
   }
 
+Future<int> updatePlayerParam(int playerId, String key, dynamic value) async {
+    final db = await instance.database;
+    
+    return await db.update(
+      'players', 
+      {key: value},
+      where: 'id = ?',
+      whereArgs: [playerId],
+    );
+  }
+
   Future<int> deletePlayer(int id) async {
     final db = await instance.database;
     return await db.delete('players', where: 'id = ?', whereArgs: [id]);
@@ -181,6 +192,17 @@ class DatabaseServicePlayer {
       property.toMap(),
       where: 'id = ?',
       whereArgs: [property.id],
+    );
+  }
+
+  Future<int> updatePropertyParam(int propertyId, String key, dynamic value) async {
+    final db = await instance.database;
+    
+    return await db.update(
+      'properties', 
+      {key: value},
+      where: 'id = ?',
+      whereArgs: [propertyId],
     );
   }
 

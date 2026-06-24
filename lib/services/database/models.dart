@@ -6,7 +6,7 @@ class Player {
   int cash;
   int netWorth;
   Map<int, int> propertiesOwnershipShares;
-  Map<int, int> propertiesVotershare;
+  Map<int, int> propertiesVoterShares;
   int position;
   bool inJail;
   int jailTurns;
@@ -20,7 +20,7 @@ class Player {
     required this.cash,
     required this.netWorth,
     required this.propertiesOwnershipShares,
-    required this.propertiesVotershare,
+    required this.propertiesVoterShares,
     required this.position,
     required this.inJail,
     required this.jailTurns,
@@ -39,9 +39,9 @@ class Player {
       'propertiesOwnershipShares': isDatabase
           ? propertiesOwnershipShares.toString()
           : propertiesOwnershipShares,
-      'propertiesVotershare': isDatabase
-          ? propertiesVotershare.toString()
-          : propertiesVotershare,
+      'propertiesVoterShares': isDatabase
+          ? propertiesVoterShares.toString()
+          : propertiesVoterShares,
       'position': position,
       'inJail': isDatabase ? inJail.toString() : inJail,
       'jailTurns': jailTurns,
@@ -63,9 +63,9 @@ class Player {
           map['propertiesOwnershipShares'].runtimeType == String
           ? processRawMap(jsonDecode(map['propertiesOwnershipShares']))
           : processRawMap(map['propertiesOwnershipShares']),
-      propertiesVotershare: map['propertiesVotershare'].runtimeType == String
-          ? processRawMap(jsonDecode(map['propertiesVotershare']))
-          : processRawMap(map['propertiesVotershare']),
+      propertiesVoterShares: map['propertiesVoterShares'].runtimeType == String
+          ? processRawMap(jsonDecode(map['propertiesVoterShares']))
+          : processRawMap(map['propertiesVoterShares']),
       position: map['position'] as int,
       inJail: map['inJail'].runtimeType == String
           ? (map['inJail'] == "true")

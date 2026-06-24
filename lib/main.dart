@@ -35,7 +35,7 @@ class Oligarch extends StatefulWidget {
 }
 
 class _OligarchState extends State<Oligarch> with WidgetsBindingObserver {
-  final DatabaseServicePlayer database = DatabaseServicePlayer.instance;
+  final DatabaseService database = DatabaseService.instance;
   int gameId = 0;
   Player currentPlayer = Player(
     id: 0,
@@ -43,7 +43,7 @@ class _OligarchState extends State<Oligarch> with WidgetsBindingObserver {
     cash: 5000,
     netWorth: 5000,
     propertiesOwnershipShares: {},
-    propertiesVotershare: {},
+    propertiesVoterShares: {},
     position: 0,
     inJail: false,
     jailTurns: 0,

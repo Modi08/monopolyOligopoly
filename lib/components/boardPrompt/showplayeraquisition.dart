@@ -1,34 +1,26 @@
 import 'package:flutter/material.dart';
 import 'package:monopolyoligarch/components/property_title.dart';
+import 'package:monopolyoligarch/components/sold_stamp.dart';
+import 'package:monopolyoligarch/constants/monoployboard.dart';
 import 'dart:math' as math;
 
-class ShowPlayerMovment extends StatelessWidget {
-  final double height;
+class ShowPlayerAcquisition extends StatelessWidget {
   final String username;
-  final int oldPosition;
-  final int newPosition;
-  const ShowPlayerMovment({
-    super.key,
-    required this.height,
-    required this.username,
-    required this.oldPosition,
-    required this.newPosition,
-  });
+  final int propertyId;
+  final double height;
 
-  int changeinPostion(int oldPos, int newPos) {
-    if (newPos < oldPos) {
-      return 39 - oldPos + newPos + 1;
-    } else {
-      return newPos - oldPos;
-    }
-  }
+  const ShowPlayerAcquisition({
+    super.key,
+    required this.username,
+    required this.propertyId,
+    required this.height,
+  });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return Column(
       mainAxisAlignment: MainAxisAlignment.center,
-      spacing: height * 0.01,
       children: [
         Text.rich(
           TextSpan(
@@ -42,9 +34,9 @@ class ShowPlayerMovment extends StatelessWidget {
                   fontWeight: FontWeight.bold,
                 ),
               ),
-              TextSpan(text: " just rolled dice and got "),
+              TextSpan(text: " just bought the property "),
               TextSpan(
-                text: (changeinPostion(oldPosition, newPosition)).toString(),
+                text: properties[propertyId].name,
                 style: theme.textTheme.bodyLarge!.copyWith(
                   color: theme.colorScheme.inversePrimary,
                   fontWeight: FontWeight.bold,
@@ -52,18 +44,20 @@ class ShowPlayerMovment extends StatelessWidget {
               ),
             ],
           ),
+          textAlign: TextAlign.center,
         ),
-        PropertyTitle(propertyId: oldPosition, theme: theme),
-        Transform.rotate(
-          // Rotates the arrow 90 degrees downwards
-          angle: math.pi / 2,
-          child: const Icon(
-            Icons.arrow_forward_rounded,
-            size: 50,
-            color: Colors.blue,
-          ),
+        SizedBox(height: height * 0.05),
+        Stack(
+          alignment: Alignment.center,
+          children: [
+            PropertyTitle(propertyId: propertyId, theme: theme),
+
+            Transform.rotate(
+              angle: -math.pi / 5.1,
+              child: const SoldStamp(scaleFactor: 0.25),
+            ),
+          ],
         ),
-        PropertyTitle(propertyId: newPosition, theme: theme),
       ],
     );
   }

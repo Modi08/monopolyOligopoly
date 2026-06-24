@@ -1,6 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
-import 'package:monopolyoligarch/components/boardPrompt/buyproperty.dart';
+import 'package:monopolyoligarch/components/boardPrompt/viewsquarecard.dart';
 import 'package:monopolyoligarch/components/board_action_prompt.dart';
 import 'package:monopolyoligarch/constants/monoployboard.dart';
 import 'package:monopolyoligarch/pages/screens/accountActions.dart';
@@ -15,7 +15,7 @@ class HomePage extends StatefulWidget {
   final double width;
   final Player currentPlayer;
   final FirebaseFirestore firestoreInstance;
-  final DatabaseServicePlayer database;
+  final DatabaseService database;
   final int gameId;
   const HomePage({
     super.key,
@@ -38,7 +38,7 @@ class _HomePageState extends State<HomePage> {
   List<int> playerOrder = [];
   int turn = 0;
 
-  bool isScreenIgnored = false;
+  bool isScreenIgnored = true;
   bool showPrompt = false;
   dynamic promptInputData = 0;
   Color? promptColor;
@@ -126,19 +126,19 @@ class _HomePageState extends State<HomePage> {
   }
 
   void onSocketDataReceived() {
-    final dynamic userData = socketClient.userData.value;
-    debugPrint("Socket Data Trigger ${userData.toString()}");
+    debugPrint("Socket Data Trigger ${socketClient.userData.value.toString()}");
 
-    if (userData == null) return;
+    if (socketClient.userData.value == null) return;
 
-    int statusCode = userData[0];
+    final int statusCode = socketClient.userData.value[0];
+    final dynamic userData = socketClient.userData.value[1];
+
     debugPrint(statusCode.toString());
+
     switch (statusCode) {
       case 201:
         setState(() {
-          playerOrder = userData[1]
-              .map<int>((item) => int.parse(item))
-              .toList();
+          playerOrder = userData.map<int>((item) => int.parse(item)).toList();
 
           for (var (index, item) in playerOrder.indexed) {
             if (widget.currentPlayer.id == item) {
@@ -163,14 +163,13 @@ class _HomePageState extends State<HomePage> {
         break;
 
       case 202:
-        if (int.parse(userData[1][0]) != widget.currentPlayer.id) {
+        if (int.parse(userData[0]) != widget.currentPlayer.id) {
           widget.database
-              .getParamofPlayer(int.parse(userData[1][0]), "username")
+              .getParamofPlayer(int.parse(userData[0]), "username")
               .then((username) {
-                debugPrint(username.toString());
                 setState(() {
                   showPrompt = true;
-                  promptInputData = [username, userData[1][1], userData[1][2]];
+                  promptInputData = [username, userData[1], userData[2]];
                   promptColor = null;
                   promptType = PromptType.playerMovement;
                 });
@@ -186,7 +185,32 @@ class _HomePageState extends State<HomePage> {
         }
         socketClient.userData.value = null;
         break;
+
+      case 203:
+        if (int.parse(userData[0]) != widget.currentPlayer.id) {
+          widget.database.getParamofPlayer(userData[0], "username").then((
+            username,
+          ) {
+            setState(() {
+              showPrompt = true;
+              promptInputData = [username, userData[1]];
+              promptColor = null;
+              promptType = PromptType.playerBoughtProperty;
+            });
+            Future.delayed(const Duration(milliseconds: 100), () {
+              if (mounted) {
+                setState(() {
+                  showPrompt = true;
+                  isScreenIgnored = false;
+                });
+              }
+            });
+          });
+        }
+        socketClient.userData.value = null;
+        break;
     }
+
     debugPrint("success");
   }
 
@@ -250,11 +274,14 @@ class _HomePageState extends State<HomePage> {
             ignoring: isScreenIgnored,
             child: AnimatedOpacity(
               duration: const Duration(milliseconds: 400),
-              opacity: showPrompt || promptType == PromptType.buyProperty ? 1.0 : 0.0,
+              opacity: showPrompt || promptType == PromptType.buyProperty
+                  ? 1.0
+                  : 0.0,
               child: GestureDetector(
                 onTap: () {
                   debugPrint("clicked");
-                  if (promptType == PromptType.playerMovement) {
+                  if (promptType == PromptType.playerMovement ||
+                      promptType == PromptType.playerBoughtProperty) {
                     setState(() {
                       showPrompt = false;
                       isScreenIgnored = true;
@@ -270,6 +297,9 @@ class _HomePageState extends State<HomePage> {
                           height: widget.height,
                           width: widget.width,
                           square: properties[widget.currentPlayer.position],
+                          socketClient: socketClient,
+                          database: widget.database,
+                          currentPlayer: widget.currentPlayer,
                         )
                       : const SizedBox(),
                 ),

@@ -33,7 +33,7 @@ Future<void> joinGame(
   String username,
   FirebaseFunctions functions,
   context,
-  DatabaseServicePlayer database,
+  DatabaseService database,
   void Function(int) setGameId,
   void Function(Player) setCurrentPlayerData,
 ) async {
@@ -68,7 +68,7 @@ Future<void> joinGame(
       cash: 5000,
       netWorth: 5000,
       propertiesOwnershipShares: {},
-      propertiesVotershare: {},
+      propertiesVoterShares: {},
       position: 0,
       inJail: false,
       jailTurns: 0,
@@ -91,7 +91,7 @@ Future<void> createGame(
   String username,
   FirebaseFunctions functions,
   context,
-  DatabaseServicePlayer database,
+  DatabaseService database,
   void Function(int) setGameId,
   void Function(Player) setCurrentPlayerData,
 ) async {
@@ -114,7 +114,7 @@ Future<void> createGame(
       cash: 5000,
       netWorth: 5000,
       propertiesOwnershipShares: {},
-      propertiesVotershare: {},
+      propertiesVoterShares: {},
       position: 0,
       inJail: false,
       jailTurns: 0,
@@ -136,7 +136,7 @@ Future<void> createGame(
 class JoinScreen extends StatefulWidget {
   final double width;
   final double height;
-  final DatabaseServicePlayer database;
+  final DatabaseService database;
   final void Function(int) setGameId;
   final void Function(Player) setCurrentPlayerData;
   const JoinScreen({

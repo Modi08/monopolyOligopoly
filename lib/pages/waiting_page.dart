@@ -8,7 +8,7 @@ import '../services/socket.dart';
 class WaitingPage extends StatefulWidget {
   final double width;
   final double height;
-  final DatabaseServicePlayer database;
+  final DatabaseService database;
   final FirebaseFirestore firestoreInstance;
   final int gameId;
   final Player currentPlayer;
@@ -100,6 +100,7 @@ class _WaitingPageState extends State<WaitingPage> {
       final client = GameClient(
         gameId: widget.gameId.toString(),
         playerId: widget.currentPlayer.id.toString(),
+        database: widget.database,
         onGameStarted: () {
           setState(() {
             gameStarted = true;

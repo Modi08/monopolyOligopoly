@@ -3,18 +3,27 @@ import 'package:monopolyoligarch/components/squareCards/corner_tax_card.dart';
 import 'package:monopolyoligarch/components/squareCards/electricandhascompany.dart';
 import 'package:monopolyoligarch/components/squareCards/event_card.dart';
 import 'package:monopolyoligarch/components/squareCards/property_cards.dart';
+import 'package:monopolyoligarch/services/database/database_service.dart';
 import 'package:monopolyoligarch/services/database/models.dart';
+import 'package:monopolyoligarch/services/snackbar.dart';
+import 'package:monopolyoligarch/services/socket.dart';
 
 class ViewSquareCard extends StatelessWidget {
   final double height;
   final double width;
   final Square square;
+  final GameClient socketClient;
+  final DatabaseService database;
+  final Player currentPlayer;
 
   const ViewSquareCard({
     super.key,
     required this.height,
     required this.width,
     required this.square,
+    required this.socketClient,
+    required this.database,
+    required this.currentPlayer,
   });
 
   Widget buildBoardSquareDisplay(Square currentSquare) {
@@ -23,7 +32,7 @@ class ViewSquareCard extends StatelessWidget {
       if (currentSquare.type == 1) {
         return PropertyCard(
           property: currentSquare,
-          width: width*0.6,
+          width: width * 0.6,
           isProperty: true,
         );
       } else if (currentSquare.type == 5) {
@@ -54,8 +63,8 @@ class ViewSquareCard extends StatelessWidget {
         ),
       );
     } else if ([0, 3, 4].contains(square.type)) {
-      return Text([0, 4].contains(square.type) ?
-        "Continue" : "Pay",
+      return Text(
+        [0, 4].contains(square.type) ? "Continue" : "Pay",
         style: currentTheme.textTheme.bodyLarge!.copyWith(
           color: Colors.black,
           fontWeight: FontWeight.bold,
@@ -85,7 +94,38 @@ class ViewSquareCard extends StatelessWidget {
           children: [
             ElevatedButton(
               onPressed: () {
-                debugPrint("buy");
+                if (square is Property) {
+                  Map<String, dynamic> boughtProperty = square.toMap();
+                  if (currentPlayer.cash > boughtProperty["price"]) {
+                    boughtProperty["ownershipShares"] = {currentPlayer.id: 100};
+                    boughtProperty["voterShares"] = {currentPlayer.id: 100};
+                    
+                    database.insertProperty(Property.fromMap(boughtProperty));
+                    database.updatePlayerParam(
+                      currentPlayer.id,
+                      "propertiesOwnershipShares",
+                      {currentPlayer.id: 100},
+                    );
+                    database.updatePlayerParam(
+                      currentPlayer.id,
+                      "propertiesVoterShares",
+                      {currentPlayer.id: 100},
+                    );
+                    database.updatePlayerParam(
+                      currentPlayer.id,
+                      "cash",
+                      currentPlayer.cash - int.parse(boughtProperty["price"]),
+                    );
+                    currentPlayer.cash = currentPlayer.cash - int.parse(boughtProperty["price"]);
+
+                    socketClient.sendMessagetoServer({
+                      "propertyId": square.id,
+                      "propertyData": boughtProperty.remove("id"),
+                    }, "buyProperty");
+                   } else {
+                    showSnackbar(context, "You don't have enough cash", true);
+                   }
+                }
               },
               style: theme.elevatedButtonTheme.style,
               child: buildContinueButtonText(square, theme),
