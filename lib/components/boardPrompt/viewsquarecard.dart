@@ -104,23 +104,27 @@ class ViewSquareCard extends StatelessWidget {
                     database.updatePlayerParam(
                       currentPlayer.id,
                       "propertiesOwnershipShares",
-                      {currentPlayer.id: 100},
+                      {currentPlayer.id: 100}.toString(),
                     );
                     database.updatePlayerParam(
                       currentPlayer.id,
                       "propertiesVoterShares",
-                      {currentPlayer.id: 100},
+                      {currentPlayer.id: 100}.toString(),
                     );
                     database.updatePlayerParam(
                       currentPlayer.id,
                       "cash",
-                      currentPlayer.cash - int.parse(boughtProperty["price"]),
+                      currentPlayer.cash - boughtProperty["price"],
                     );
-                    currentPlayer.cash = currentPlayer.cash - int.parse(boughtProperty["price"]);
+                    currentPlayer.cash = currentPlayer.cash - boughtProperty["price"] as int;
+                    boughtProperty.remove("id");
+                    
+                    boughtProperty["ownershipShares"] = {currentPlayer.id.toString(): 100};
+                    boughtProperty["voterShares"] = {currentPlayer.id.toString(): 100};
 
                     socketClient.sendMessagetoServer({
                       "propertyId": square.id,
-                      "propertyData": boughtProperty.remove("id"),
+                      "propertyData": boughtProperty,
                     }, "buyProperty");
                    } else {
                     showSnackbar(context, "You don't have enough cash", true);

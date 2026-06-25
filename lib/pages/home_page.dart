@@ -133,7 +133,7 @@ class _HomePageState extends State<HomePage> {
     final int statusCode = socketClient.userData.value[0];
     final dynamic userData = socketClient.userData.value[1];
 
-    debugPrint(statusCode.toString());
+    debugPrint("page: $statusCode");
 
     switch (statusCode) {
       case 201:
@@ -168,7 +168,6 @@ class _HomePageState extends State<HomePage> {
               .getParamofPlayer(int.parse(userData[0]), "username")
               .then((username) {
                 setState(() {
-                  showPrompt = true;
                   promptInputData = [username, userData[1], userData[2]];
                   promptColor = null;
                   promptType = PromptType.playerMovement;
@@ -185,14 +184,13 @@ class _HomePageState extends State<HomePage> {
         }
         socketClient.userData.value = null;
         break;
-
+     
       case 203:
         if (int.parse(userData[0]) != widget.currentPlayer.id) {
           widget.database.getParamofPlayer(userData[0], "username").then((
             username,
           ) {
             setState(() {
-              showPrompt = true;
               promptInputData = [username, userData[1]];
               promptColor = null;
               promptType = PromptType.playerBoughtProperty;
@@ -306,6 +304,7 @@ class _HomePageState extends State<HomePage> {
               ),
             ),
           ),
+          showPrompt ?
           BoardActionPrompt(
             isVisible: showPrompt,
             width: widget.width,
@@ -315,7 +314,7 @@ class _HomePageState extends State<HomePage> {
             promptType: promptType,
             height: widget.height,
             socketClient: socketClient,
-          ),
+          ) : SizedBox(),
         ],
       ),
 

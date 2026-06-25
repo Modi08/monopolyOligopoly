@@ -39,7 +39,7 @@ class GameClient {
 
   void _handleServerEvent(Map<String, dynamic> data) {
     final int statusCode = data['statusCode'];
-
+    debugPrint("Socket: $statusCode");
     switch (statusCode) {
       case 201:
         debugPrint("Game Stared: $data");
@@ -50,9 +50,9 @@ class GameClient {
       case 202:
         debugPrint("Player moved: $data");
         database.updatePlayerParam(
-          int.parse(data["data"].toList()[1][0]),
+          int.parse(data["data"].toList()[0]),
           "position",
-          int.parse(data["data"].toList()[1][1]),
+          data["data"].toList()[1],
         );
         userData.value = [statusCode, data["data"].toList()];
         break;

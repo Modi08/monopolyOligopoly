@@ -56,11 +56,13 @@ async def websocket_endpoint(websocket: WebSocket, gameId: str, playerId: str):
         while True:
             data = await websocket.receive_json()
             action = data.get("action")
+            print(data)
 
             match action:
                 case "startGame":
                     playersIds = list(docPlayer.get().to_dict().keys())
                     #random.shuffle(playersIds)
+                    print(playersIds)
 
                     for index in range(len(playersIds)):
                         docPlayer.update(
@@ -75,7 +77,7 @@ async def websocket_endpoint(websocket: WebSocket, gameId: str, playerId: str):
                     )
 
                 case "rolledDice":
-                    oldPosition = data.get("oldPosition")
+                    oldPosition = (data.get("oldPosition"))
                     newPosition = data.get("newPosition")
 
                     # playerTurn = docPlayer.get().to_dict().get(str(playerId), {}).get("playerTurn")
@@ -93,23 +95,24 @@ async def websocket_endpoint(websocket: WebSocket, gameId: str, playerId: str):
                     )
 
                 case "buyProperty":
-                    propertyId = data.get("propertyId")
-                    propertyData = json.loads(data.get("propertyData"))
+                    propertyId = str(data.get("propertyId"))
+                    propertyData = data.get("propertyData")
 
                     #Properties Datebase Updates
 
-                    docProperty.set({propertyId: propertyData})
+                    docProperty.set(json.dumps({propertyId: propertyData}), merge=True)
                     
 
                     #Player Datebase Updates
+                    currentPlayerDict = docPlayer.get().to_dict().get(str(playerId), {})
 
-                    playerPropertiesOwnership = json.loads(docPlayer.get().to_dict().get(str(playerId), {}).get("propertiesOwnershipShares"))
+                    playerPropertiesOwnership = currentPlayerDict.get("propertiesOwnershipShares")
                     playerPropertiesOwnership[propertyId] = 100
 
-                    playerCash = json.loads(docPlayer.get().to_dict().get(str(playerId), {}).get("cash"))
+                    playerCash = currentPlayerDict.get("cash")
                     playerCash = playerCash-propertyData["price"]
 
-                    playerPropertiesVoter = json.loads(docPlayer.get().to_dict().get(str(playerId), {}).get("propertiesVoterShares"))
+                    playerPropertiesVoter = currentPlayerDict.get("propertiesVoterShares")
                     playerPropertiesVoter[propertyId] = 100
 
                     docPlayer.update({f"{playerId}.propertiesOwnershipShares": playerPropertiesOwnership})

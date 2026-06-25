@@ -147,7 +147,7 @@ class Property extends Square {
 
     map.addAll({
       'price': price,
-      'rent': rent,
+      'rent': isDatabase ? rent.toString() : rent,
       'houseCost': houseCost,
       'houses': houses,
       'ownershipShares': isDatabase
@@ -176,7 +176,11 @@ class Property extends Square {
 
   static Map<int, int> processRawMap(Map<dynamic, dynamic> rawMap) {
     return rawMap.map((key, value) {
-      return MapEntry(int.parse(key), value as int);
+      if (key is String) {
+        return MapEntry(int.parse(key), value as int);
+      } else {
+        return MapEntry(key, value as int);
+      }
     });
   }
 }

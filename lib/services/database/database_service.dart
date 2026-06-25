@@ -26,7 +26,7 @@ class DatabaseService {
     return await openDatabase(
       path,
       version: 1,
-      onCreate: _createDB, // Called only the very first time the app runs
+      onCreate: _createDB,
     );
   }
 
@@ -56,7 +56,6 @@ class DatabaseService {
     await db.execute('''
       CREATE TABLE properties (
         id $idType,
-        postion $intType,
         name $textType,
         type $intType,
         color $intType,
