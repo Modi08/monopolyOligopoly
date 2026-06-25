@@ -187,7 +187,7 @@ class _HomePageState extends State<HomePage> {
      
       case 203:
         if (int.parse(userData[0]) != widget.currentPlayer.id) {
-          widget.database.getParamofPlayer(userData[0], "username").then((
+          widget.database.getParamofPlayer(int.parse(userData[0]), "username").then((
             username,
           ) {
             setState(() {

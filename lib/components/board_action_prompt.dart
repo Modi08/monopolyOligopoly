@@ -68,7 +68,7 @@ class _BoardActionPromptState extends State<BoardActionPrompt> {
       case PromptType.playerBoughtProperty:
         return ShowPlayerAcquisition(
           username: widget.inputData[0],
-          propertyId: widget.inputData[1],
+          propertyId: int.parse(widget.inputData[1]),
           height: widget.height,
         );
 

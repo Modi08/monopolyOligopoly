@@ -100,7 +100,7 @@ async def websocket_endpoint(websocket: WebSocket, gameId: str, playerId: str):
 
                     #Properties Datebase Updates
 
-                    docProperty.set(json.dumps({propertyId: propertyData}), merge=True)
+                    docProperty.set({propertyId: propertyData}, merge=True)
                     
 
                     #Player Datebase Updates

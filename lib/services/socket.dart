@@ -46,7 +46,7 @@ class GameClient {
         userData.value = [statusCode, data["data"].toList()];
         onGameStarted();
         break;
-      
+
       case 202:
         debugPrint("Player moved: $data");
         database.updatePlayerParam(
@@ -56,32 +56,59 @@ class GameClient {
         );
         userData.value = [statusCode, data["data"].toList()];
         break;
-      
+
       case 203:
         debugPrint("Property Bought: $data");
-        
+
         userData.value = [statusCode, data["data"].toList()];
 
-        int playerId = data["data"].toList()[0];
-        int propertyId = data["data"].toList()[1];
+        int playerId = int.parse(data["data"].toList()[0]);
+        int propertyId = int.parse(data["data"].toList()[1]);
         Map<String, dynamic> boughtProperty = properties[propertyId].toMap();
-        
+
         boughtProperty["ownershipShares"] = {playerId: 100};
         boughtProperty["voterShares"] = {playerId: 100};
 
         database.insertProperty(Property.fromMap(boughtProperty));
-        database.updatePlayerParam(playerId, "propertiesOwnershipShares", {
-          playerId: 100,
+        
+        database.getParamofPlayer(playerId, "propertiesOwnershipShares").then((
+          rawPropertyOwnership,
+        ) {
+          Map<String, dynamic> processedPropertyOwnership = jsonDecode(
+            rawPropertyOwnership,
+          );
+          processedPropertyOwnership[propertyId.toString()] = 100;
+          database.updatePlayerParam(
+            playerId,
+            "propertiesOwnershipShares",
+            processedPropertyOwnership.toString(),
+          );
         });
-        database.updatePlayerParam(playerId, "propertiesVoterShares", {
-          playerId: 100,
+
+        database.getParamofPlayer(playerId, "propertiesVoterShares").then((
+          rawPropertyVoter,
+        ) {
+          Map<String, dynamic> processedPropertyVoter = jsonDecode(
+            rawPropertyVoter,
+          );
+          processedPropertyVoter[propertyId.toString()] = 100;
+          database.updatePlayerParam(
+            playerId,
+            "propertiesVoterShares",
+            processedPropertyVoter.toString(),
+          );
         });
+
         database.getParamofPlayer(playerId, "cash").then((cash) {
           database.updatePlayerParam(
             playerId,
             "cash",
-            cash - int.parse(boughtProperty["price"]),
+            cash - boughtProperty["price"],
           );
+        });
+
+        database.getPlayer(playerId).then((player) {
+          debugPrint(player!.toMap().toString());
         });
         break;
     }
