@@ -8,6 +8,7 @@ import 'package:monopolyoligarch/pages/screens/dashboard.dart';
 import 'package:monopolyoligarch/pages/screens/portfolio.dart';
 import 'package:monopolyoligarch/services/database/database_service.dart';
 import 'package:monopolyoligarch/services/database/models.dart';
+import 'package:monopolyoligarch/services/snackbar.dart';
 import 'package:monopolyoligarch/services/socket.dart';
 
 class HomePage extends StatefulWidget {
@@ -35,8 +36,7 @@ class _HomePageState extends State<HomePage> {
   int selectedScreenIndex = 1;
   GameClient socketClient = locator<GameClient>();
 
-  List<int> playerOrder = [];
-  int turn = 0;
+  Map<String, dynamic> gameDetails = {"playerOrder": [], "turn": 0, "cashPool": 0};
 
   bool isScreenIgnored = true;
   bool showPrompt = false;
@@ -68,13 +68,14 @@ class _HomePageState extends State<HomePage> {
         .snapshots()
         .listen((DocumentSnapshot snapshot) {
           if (!snapshot.exists) {
-            listentoPlayerStream(gameId, currentPlayer);
             debugPrint("Stopped listening to Player Stream");
             return;
           }
 
           Map<String, dynamic> rawPlayersSnapshot =
               snapshot.data() as Map<String, dynamic>;
+
+          debugPrint(rawPlayersSnapshot.toString());
 
           for (var index in rawPlayersSnapshot.keys.toList()) {
             Map<String, dynamic> rawPlayerData = Map<String, dynamic>.from(
@@ -87,7 +88,6 @@ class _HomePageState extends State<HomePage> {
             widget.database.insertPlayer(Player.fromMap(rawPlayerData));
           }
 
-          listentoPlayerStream(gameId, currentPlayer);
           debugPrint("Stopped listening to Player Stream");
           return;
         });
@@ -102,7 +102,6 @@ class _HomePageState extends State<HomePage> {
         .snapshots()
         .listen((DocumentSnapshot snapshot) {
           if (!snapshot.exists) {
-            listentoPropertyStream(gameId);
             debugPrint("Stopped listening to Property Stream");
             return;
           }
@@ -118,7 +117,6 @@ class _HomePageState extends State<HomePage> {
             widget.database.insertProperty(Property.fromMap(rawPropertyData));
           }
 
-          listentoPropertyStream(gameId);
           debugPrint("Stopped listening to Property Stream");
           return;
         });
@@ -138,9 +136,12 @@ class _HomePageState extends State<HomePage> {
     switch (statusCode) {
       case 201:
         setState(() {
-          playerOrder = userData.map<int>((item) => int.parse(item)).toList();
+          gameDetails["playerOrder"] = userData.map<int>((item) => int.parse(item)).toList();
 
-          for (var (index, item) in playerOrder.indexed) {
+          for (var entry in (gameDetails["playerOrder"] as List).asMap().entries) {
+            int index = entry.key;
+            int item = entry.value;
+
             if (widget.currentPlayer.id == item) {
               widget.currentPlayer.playerTurn = index + 1;
             }
@@ -184,10 +185,10 @@ class _HomePageState extends State<HomePage> {
         }
         socketClient.userData.value = null;
         break;
-     
+
       case 203:
-        if (int.parse(userData[0]) != widget.currentPlayer.id) {
-          widget.database.getParamofPlayer(int.parse(userData[0]), "username").then((
+        if (userData[0] != widget.currentPlayer.id) {
+          widget.database.getParamofPlayer(userData[0], "username").then((
             username,
           ) {
             setState(() {
@@ -204,6 +205,12 @@ class _HomePageState extends State<HomePage> {
               }
             });
           });
+        } else {
+          showSnackbar(
+            context,
+            "Successfully bought ${properties[userData[1]].name}",
+            false,
+          );
         }
         socketClient.userData.value = null;
         break;
@@ -220,7 +227,7 @@ class _HomePageState extends State<HomePage> {
     if (socketClient.userData.value != null) {
       onSocketDataReceived();
     }
-    //listentoPlayerStream(widget.gameId, widget.currentPlayer);
+    listentoPlayerStream(widget.gameId, widget.currentPlayer);
   }
 
   @override
@@ -234,9 +241,9 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     void promptFunction() {
       debugPrint(
-        "Propmt function: $promptType, ${playerOrder[turn]} == ${widget.currentPlayer.id}",
+        "Propmt function: $promptType, ${gameDetails["playerOrder"][gameDetails["turn"]]} == ${widget.currentPlayer.id}",
       );
-      if (playerOrder[0] == widget.currentPlayer.id &&
+      if (gameDetails["playerOrder"][0] == widget.currentPlayer.id &&
           promptType == PromptType.turnDisplay) {
         setState(() {
           showPrompt = true;
@@ -245,7 +252,7 @@ class _HomePageState extends State<HomePage> {
           promptInputData = widget.currentPlayer;
         });
       } else if (promptType == PromptType.rollDice &&
-          playerOrder[turn] == widget.currentPlayer.id) {
+          gameDetails["playerOrder"][gameDetails["turn"]] == widget.currentPlayer.id) {
         setState(() {
           promptType = PromptType.buyProperty;
           showPrompt = false;
@@ -255,6 +262,7 @@ class _HomePageState extends State<HomePage> {
         setState(() {
           showPrompt = false;
           isScreenIgnored = true;
+          promptType = PromptType.none;
         });
       }
     }
@@ -298,23 +306,26 @@ class _HomePageState extends State<HomePage> {
                           socketClient: socketClient,
                           database: widget.database,
                           currentPlayer: widget.currentPlayer,
+                          onFinish: promptFunction,
+                          gameDetails: gameDetails,
                         )
                       : const SizedBox(),
                 ),
               ),
             ),
           ),
-          showPrompt ?
-          BoardActionPrompt(
-            isVisible: showPrompt,
-            width: widget.width,
-            color: null,
-            onButtonPress: promptFunction,
-            inputData: promptInputData,
-            promptType: promptType,
-            height: widget.height,
-            socketClient: socketClient,
-          ) : SizedBox(),
+          showPrompt
+              ? BoardActionPrompt(
+                  isVisible: showPrompt,
+                  width: widget.width,
+                  color: null,
+                  onButtonPress: promptFunction,
+                  inputData: promptInputData,
+                  promptType: promptType,
+                  height: widget.height,
+                  socketClient: socketClient,
+                )
+              : SizedBox(),
         ],
       ),
 

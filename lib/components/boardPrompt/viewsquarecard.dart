@@ -15,6 +15,8 @@ class ViewSquareCard extends StatelessWidget {
   final GameClient socketClient;
   final DatabaseService database;
   final Player currentPlayer;
+  final VoidCallback onFinish;
+  final Map<String, dynamic> gameDetails;
 
   const ViewSquareCard({
     super.key,
@@ -24,7 +26,110 @@ class ViewSquareCard extends StatelessWidget {
     required this.socketClient,
     required this.database,
     required this.currentPlayer,
+    required this.onFinish,
+    required this.gameDetails,
   });
+
+  void buyPropertyFunction(BuildContext context, int? x) {
+    Map<String, dynamic> boughtProperty = square.toMap();
+    if (currentPlayer.cash > boughtProperty["price"]) {
+      boughtProperty["ownershipShares"] = {currentPlayer.id: 100};
+      boughtProperty["voterShares"] = {currentPlayer.id: 100};
+
+      database.insertProperty(Property.fromMap(boughtProperty));
+      database.updatePlayerParam(
+        currentPlayer.id,
+        "propertiesOwnershipShares",
+        {square.id.toString(): 100}.toString(),
+      );
+      database.updatePlayerParam(
+        currentPlayer.id,
+        "propertiesVoterShares",
+        {square.id.toString(): 100}.toString(),
+      );
+      database.updatePlayerParam(
+        currentPlayer.id,
+        "cash",
+        currentPlayer.cash - boughtProperty["price"],
+      );
+      currentPlayer.cash = currentPlayer.cash - boughtProperty["price"] as int;
+      boughtProperty.remove("id");
+
+      boughtProperty["ownershipShares"] = {currentPlayer.id.toString(): 100};
+      boughtProperty["voterShares"] = {currentPlayer.id.toString(): 100};
+
+      socketClient.sendMessagetoServer({
+        "propertyId": square.id,
+        "propertyData": boughtProperty,
+      }, "buyProperty");
+    } else {
+      showSnackbar(context, "You don't have enough cash", true);
+    }
+  }
+
+  void payTaxFunction(BuildContext context, int? taxAmount) {
+    if (currentPlayer.cash > taxAmount!) {
+      currentPlayer.cash = currentPlayer.cash - taxAmount;
+
+      database.updatePlayerParam(
+        currentPlayer.id,
+        "cash",
+        currentPlayer.cash - taxAmount,
+      );
+
+      gameDetails["cashPool"] = gameDetails["cashPool"] + taxAmount;
+
+      socketClient.sendMessagetoServer({
+        "taxPaid": taxAmount,
+        "cashPool": gameDetails["cashPool"],
+      }, "payTax");
+
+      showSnackbar(context, "You just paid \$$taxAmount in taxes", true);
+    } else {
+      debugPrint("To be Implimented");
+    }
+  }
+
+  void collectFunction(BuildContext context, int? x) {
+    int amount = 0;
+    if (square.id == 20) {
+      currentPlayer.cash = currentPlayer.cash + gameDetails["cashPool"] as int;
+
+      database.updatePlayerParam(
+        currentPlayer.id,
+        "cash",
+        currentPlayer.cash + gameDetails["cashPool"],
+      );
+
+      socketClient.sendMessagetoServer({
+        "cashPool": gameDetails["cashPool"],
+      }, "cashPoolCollected");
+
+      amount = gameDetails["cashPool"];
+
+      gameDetails["cashPool"] = 0;
+    } else {
+      currentPlayer.cash = currentPlayer.cash + 200;
+      amount = 200;
+
+      database.updatePlayerParam(
+        currentPlayer.id,
+        "cash",
+        currentPlayer.cash + 200,
+      );
+
+      socketClient.sendMessagetoServer({}, "goCollected");
+    }
+    showSnackbar(context, "You just collect \$$amount", false);
+  }
+
+  void goToJail(BuildContext context, int? x) {
+    currentPlayer.inJail = true;
+    currentPlayer.position = 10;
+
+    database.updatePlayerParam(currentPlayer.id, "inJail", "true");
+    database.updatePlayerParam(currentPlayer.id, "postion", 10);
+  }
 
   Widget buildBoardSquareDisplay(Square currentSquare) {
     debugPrint("square type: ${currentSquare.type}");
@@ -62,9 +167,25 @@ class ViewSquareCard extends StatelessWidget {
           fontWeight: FontWeight.bold,
         ),
       );
-    } else if ([0, 3, 4].contains(square.type)) {
+    } else if (0 == square.type) {
       return Text(
-        [0, 4].contains(square.type) ? "Continue" : "Pay",
+        "Collect",
+        style: currentTheme.textTheme.bodyLarge!.copyWith(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+    } else if (3 == square.type) {
+      return Text(
+        "Pay",
+        style: currentTheme.textTheme.bodyLarge!.copyWith(
+          color: Colors.black,
+          fontWeight: FontWeight.bold,
+        ),
+      );
+    } else if (4 == square.type) {
+      return Text(
+        10 == square.id ? "Continue" : "Go To Jail",
         style: currentTheme.textTheme.bodyLarge!.copyWith(
           color: Colors.black,
           fontWeight: FontWeight.bold,
@@ -81,6 +202,106 @@ class ViewSquareCard extends StatelessWidget {
     }
   }
 
+  List<Widget> buildBottomButtons(
+    List<Function(BuildContext, int?)> functionsLists,
+    BuildContext context,
+    ThemeData currentTheme,
+  ) {
+    if ([1, 5, 6].contains(square.type)) {
+      return [
+        ElevatedButton(
+          onPressed: () {
+            functionsLists[0](context, null);
+            onFinish();
+          },
+          style: currentTheme.elevatedButtonTheme.style,
+          child: buildContinueButtonText(square, currentTheme),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            onFinish();
+          },
+          style: currentTheme.elevatedButtonTheme.style!.copyWith(
+            backgroundColor: WidgetStateProperty.all(
+              currentTheme.colorScheme.error,
+            ),
+          ),
+          child: Text(
+            "Leave",
+            style: currentTheme.textTheme.bodyLarge!.copyWith(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+        ElevatedButton(
+          onPressed: () {
+            debugPrint("To be implimented");
+          },
+          style: currentTheme.elevatedButtonTheme.style!.copyWith(
+            backgroundColor: WidgetStateProperty.all(
+              currentTheme.colorScheme.inversePrimary,
+            ),
+          ),
+          child: Text(
+            "Apply for a loan",
+            style: currentTheme.textTheme.bodyLarge!.copyWith(
+              color: Colors.black,
+              fontWeight: FontWeight.bold,
+            ),
+          ),
+        ),
+      ];
+    } else if (0 == square.type) {
+      return [
+        ElevatedButton(
+          onPressed: () {
+            functionsLists[1](context, null);
+            onFinish();
+          },
+          style: currentTheme.elevatedButtonTheme.style,
+          child: buildContinueButtonText(square, currentTheme),
+        ),
+      ];
+    } else if (3 == square.type) {
+      return [
+        ElevatedButton(
+          onPressed: () {
+            functionsLists[2](context, square.id == 4 ? 200 : 100);
+            onFinish();
+          },
+          style: currentTheme.elevatedButtonTheme.style,
+          child: buildContinueButtonText(square, currentTheme),
+        ),
+      ];
+    } else if (4 == square.type) {
+      if (square.type == 30) {
+        return [
+          ElevatedButton(
+            onPressed: () {
+              functionsLists[3](context, null);
+              onFinish();
+            },
+            style: currentTheme.elevatedButtonTheme.style,
+            child: buildContinueButtonText(square, currentTheme),
+          ),
+        ];
+      } else {
+        return [
+          ElevatedButton(
+            onPressed: () {
+              onFinish();
+            },
+            style: currentTheme.elevatedButtonTheme.style,
+            child: buildContinueButtonText(square, currentTheme),
+          ),
+        ];
+      }
+    } else {
+      return [];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
@@ -91,50 +312,11 @@ class ViewSquareCard extends StatelessWidget {
         buildBoardSquareDisplay(square),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            ElevatedButton(
-              onPressed: () {
-                if (square is Property) {
-                  Map<String, dynamic> boughtProperty = square.toMap();
-                  if (currentPlayer.cash > boughtProperty["price"]) {
-                    boughtProperty["ownershipShares"] = {currentPlayer.id: 100};
-                    boughtProperty["voterShares"] = {currentPlayer.id: 100};
-                    
-                    database.insertProperty(Property.fromMap(boughtProperty));
-                    database.updatePlayerParam(
-                      currentPlayer.id,
-                      "propertiesOwnershipShares",
-                      {currentPlayer.id: 100}.toString(),
-                    );
-                    database.updatePlayerParam(
-                      currentPlayer.id,
-                      "propertiesVoterShares",
-                      {currentPlayer.id: 100}.toString(),
-                    );
-                    database.updatePlayerParam(
-                      currentPlayer.id,
-                      "cash",
-                      currentPlayer.cash - boughtProperty["price"],
-                    );
-                    currentPlayer.cash = currentPlayer.cash - boughtProperty["price"] as int;
-                    boughtProperty.remove("id");
-                    
-                    boughtProperty["ownershipShares"] = {currentPlayer.id.toString(): 100};
-                    boughtProperty["voterShares"] = {currentPlayer.id.toString(): 100};
-
-                    socketClient.sendMessagetoServer({
-                      "propertyId": square.id,
-                      "propertyData": boughtProperty,
-                    }, "buyProperty");
-                   } else {
-                    showSnackbar(context, "You don't have enough cash", true);
-                   }
-                }
-              },
-              style: theme.elevatedButtonTheme.style,
-              child: buildContinueButtonText(square, theme),
-            ),
-          ],
+          children: buildBottomButtons(
+            [buyPropertyFunction, payTaxFunction, collectFunction, goToJail],
+            context,
+            theme,
+          ),
         ),
       ],
     );

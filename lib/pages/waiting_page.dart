@@ -77,13 +77,6 @@ class _WaitingPageState extends State<WaitingPage> {
             setState(() {
               playerList = playersSnapshot;
             });
-            if (!gameStarted) {
-              listentoPlayerStream(gameId, currentPlayer);
-              return;
-            } else {
-              debugPrint("Stopped listening to Player Stream");
-              return;
-            }
           }
         });
     debugPrint("end of function");
@@ -99,7 +92,7 @@ class _WaitingPageState extends State<WaitingPage> {
     if (!locator.isRegistered<GameClient>()) {
       final client = GameClient(
         gameId: widget.gameId.toString(),
-        playerId: widget.currentPlayer.id.toString(),
+        currentPlayerId: widget.currentPlayer.id,
         database: widget.database,
         onGameStarted: () {
           setState(() {

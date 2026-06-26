@@ -56,6 +56,7 @@ async def websocket_endpoint(websocket: WebSocket, gameId: str, playerId: str):
         while True:
             data = await websocket.receive_json()
             action = data.get("action")
+            docProperty.set({}, merge=True)
             print(data)
 
             match action:
@@ -69,7 +70,7 @@ async def websocket_endpoint(websocket: WebSocket, gameId: str, playerId: str):
                             {f"{index+1}.playerTurn": int(playersIds[index])}
                         )
 
-                        docGameDetails.set({"playerOrder": playersIds})
+                        docGameDetails.set({"playerOrder": playersIds, "turn": 0, "cashPool":0})
 
                     await manager.broadcast_to_game(
                         {"event": "gameStarted", "data": playersIds, "statusCode": 201},
@@ -100,8 +101,7 @@ async def websocket_endpoint(websocket: WebSocket, gameId: str, playerId: str):
 
                     #Properties Datebase Updates
 
-                    docProperty.set({propertyId: propertyData}, merge=True)
-                    
+                    docProperty.update({propertyId: propertyData})
 
                     #Player Datebase Updates
                     currentPlayerDict = docPlayer.get().to_dict().get(str(playerId), {})
@@ -128,6 +128,40 @@ async def websocket_endpoint(websocket: WebSocket, gameId: str, playerId: str):
                         },
                         gameId,
                     )
+
+                case "payTax":
+                    taxPaid = data.get("taxPaid")
+                    cashPool = data.get("cashPool")
+                    currentPlayerDict = docPlayer.get().to_dict().get(str(playerId), {})
+
+                    docPlayer.update({f"{playerId}.cash": currentPlayerDict.get("cash")-taxPaid})
+                    docPlayer.update({f"{playerId}.netWorth": currentPlayerDict.get("netWorth")-taxPaid})
+                    docGameDetails.update({f"cashPool": cashPool})
+
+                case "cashPoolCollected":
+                    cashPool = data.get("cashPool")
+                    currentPlayerDict = docPlayer.get().to_dict().get(str(playerId), {})
+
+                    docPlayer.update({f"{playerId}.cash": currentPlayerDict.get("cash")+cashPool})
+                    docPlayer.update({f"{playerId}.netWorth": currentPlayerDict.get("netWorth")+cashPool})
+                    docGameDetails.update({f"cashPool": 0})
+
+                    await manager.broadcast_to_game(
+                        {
+                            "event": "PropertyBought",
+                            "data": [playerId, propertyId],
+                            "statusCode": 203,
+                        },
+                        gameId,
+                    )
+
+                case "goCollected":
+                    currentPlayerDict = docPlayer.get().to_dict().get(str(playerId), {})
+                    
+                    docPlayer.update({f"{playerId}.cash": currentPlayerDict.get("cash")+200})
+                    docPlayer.update({f"{playerId}.netWorth": currentPlayerDict.get("netWorth")+200})
+
+                    
 
     except WebSocketDisconnect:
         manager.disconnect(websocket, gameId)

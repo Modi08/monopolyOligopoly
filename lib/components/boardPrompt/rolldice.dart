@@ -139,13 +139,13 @@ class _RollDiceState extends State<RollDice> {
                     "oldPosition": widget.currentPlayer!.position,
                     "newPosition":
                         widget.currentPlayer!.position +
-                        currentFace1 +
-                        currentFace2,
+                        1 +
+                        1,
                   }, "rolledDice");
                   widget.currentPlayer!.position =
                       widget.currentPlayer!.position +
-                      currentFace1 +
-                      currentFace2;
+                      1 +
+                      1;
 
                   widget.onRollComplete();
                 },
