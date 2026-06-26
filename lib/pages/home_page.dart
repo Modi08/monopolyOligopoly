@@ -36,7 +36,11 @@ class _HomePageState extends State<HomePage> {
   int selectedScreenIndex = 1;
   GameClient socketClient = locator<GameClient>();
 
-  Map<String, dynamic> gameDetails = {"playerOrder": [], "turn": 0, "cashPool": 0};
+  Map<String, dynamic> gameDetails = {
+    "playerOrder": [],
+    "turn": 0,
+    "cashPool": 0,
+  };
 
   bool isScreenIgnored = true;
   bool showPrompt = false;
@@ -53,6 +57,23 @@ class _HomePageState extends State<HomePage> {
     ),
     const AccountActions(),
   ];
+
+  int calulateNetWorth() {
+    int valuation = widget.currentPlayer.cash;
+    for (var entry in widget.currentPlayer.propertiesOwnershipShares.entries) {
+      widget.database.getParamofProperty(entry.key, "valuation").then((
+        valuationP,
+      ) {
+        valuation = valuationP * entry.value * 0.75;
+        valuation =
+            valuationP *
+            widget.currentPlayer.propertiesVoterShares[entry.key] *
+            0.25;
+      });
+    }
+
+    return valuation;
+  }
 
   void onScreenSelected(int index) {
     setState(() {
@@ -136,9 +157,12 @@ class _HomePageState extends State<HomePage> {
     switch (statusCode) {
       case 201:
         setState(() {
-          gameDetails["playerOrder"] = userData.map<int>((item) => int.parse(item)).toList();
+          gameDetails["playerOrder"] = userData
+              .map<int>((item) => int.parse(item))
+              .toList();
 
-          for (var entry in (gameDetails["playerOrder"] as List).asMap().entries) {
+          for (var entry
+              in (gameDetails["playerOrder"] as List).asMap().entries) {
             int index = entry.key;
             int item = entry.value;
 
@@ -252,7 +276,8 @@ class _HomePageState extends State<HomePage> {
           promptInputData = widget.currentPlayer;
         });
       } else if (promptType == PromptType.rollDice &&
-          gameDetails["playerOrder"][gameDetails["turn"]] == widget.currentPlayer.id) {
+          gameDetails["playerOrder"][gameDetails["turn"]] ==
+              widget.currentPlayer.id) {
         setState(() {
           promptType = PromptType.buyProperty;
           showPrompt = false;
@@ -266,6 +291,8 @@ class _HomePageState extends State<HomePage> {
         });
       }
     }
+
+    widget.currentPlayer.netWorth = calulateNetWorth();
 
     final theme = Theme.of(context);
     debugPrint(

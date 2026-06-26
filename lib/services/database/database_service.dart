@@ -65,7 +65,8 @@ class DatabaseService {
         houseCost $intType,
         houses $intType,
         ownershipShares $textType,
-        voterShares $textType
+        voterShares $textType,
+        valuation $intType
       )
     ''');
   }

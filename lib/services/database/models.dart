@@ -135,6 +135,7 @@ class Property extends Square {
   final int houses;
   final Map<int, int> ownershipShares;
   final Map<int, int> voterShares;
+  final int valuation;
 
   Property({
     required super.id,
@@ -147,6 +148,7 @@ class Property extends Square {
     required this.houses,
     required this.ownershipShares,
     required this.voterShares,
+    required this.valuation
   });
 
   @override
@@ -164,6 +166,7 @@ class Property extends Square {
       'voterShares': isDatabase
           ? jsonEncode(voterShares.map((k, v) => MapEntry(k.toString(), v)))
           : voterShares,
+      'valuation' : valuation
     });
 
     return map;
@@ -181,6 +184,7 @@ class Property extends Square {
       rent: List<int>.from(map['rent']),
       ownershipShares: processRawMap(map['ownershipShares']),
       voterShares: processRawMap(map['voterShares']),
+      valuation: map["valuation"] as int,
     );
   }
 

@@ -18,6 +18,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 60,
   }),
   Square.fromMap({
     "id": 2,
@@ -36,6 +37,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 60,
   }),
   Square.fromMap({
     "id": 4,
@@ -54,6 +56,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 200,
   }),
   Property.fromMap({
     "id": 6,
@@ -66,6 +69,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 100,
   }),
   Square.fromMap({
     "id": 7,
@@ -84,6 +88,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 100,
   }),
   Property.fromMap({
     "id": 9,
@@ -96,6 +101,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 120,
   }),
   Square.fromMap({
     "id": 10,
@@ -114,6 +120,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 140,
   }),
   Property.fromMap({
     "id": 12,
@@ -126,6 +133,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 150,
   }),
   Property.fromMap({
     "id": 13,
@@ -138,6 +146,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 140,
   }),
   Property.fromMap({
     "id": 14,
@@ -150,6 +159,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 160,
   }),
   Property.fromMap({
     "id": 15,
@@ -162,6 +172,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 200,
   }),
   Property.fromMap({
     "id": 16,
@@ -174,6 +185,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 180,
   }),
   Square.fromMap({
     "id": 17,
@@ -192,6 +204,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 180,
   }),
   Property.fromMap({
     "id": 19,
@@ -204,6 +217,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 200,
   }),
   Square.fromMap({
     "id": 20,
@@ -222,6 +236,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 220,
   }),
   Square.fromMap({
     "id": 22,
@@ -240,6 +255,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 220,
   }),
   Property.fromMap({
     "id": 24,
@@ -252,6 +268,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 240,
   }),
   Property.fromMap({
     "id": 25,
@@ -264,6 +281,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 200,
   }),
   Property.fromMap({
     "id": 26,
@@ -276,6 +294,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 260,
   }),
   Property.fromMap({
     "id": 27,
@@ -288,6 +307,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 260,
   }),
   Property.fromMap({
     "id": 28,
@@ -300,6 +320,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 150,
   }),
   Property.fromMap({
     "id": 29,
@@ -312,6 +333,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 280,
   }),
   Square.fromMap({
     "id": 30,
@@ -330,6 +352,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 300,
   }),
   Property.fromMap({
     "id": 32,
@@ -342,6 +365,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 300,
   }),
   Square.fromMap({
     "id": 33,
@@ -360,6 +384,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 320,
   }),
   Property.fromMap({
     "id": 35,
@@ -372,6 +397,7 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 200,
   }),
   Square.fromMap({
     "id": 36,
@@ -386,10 +412,11 @@ List<Square> properties = [
     "price": 350,
     "rent": [35, 175, 500, 1100, 1300, 1500],
     "color": 0xFF3F51B5, 
-    "houseCost": 200,
+    "houseCost": 350,
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 350,
   }),
   Square.fromMap({
     "id": 38,
@@ -408,5 +435,6 @@ List<Square> properties = [
     "houses": 0,
     "ownershipShares": {},
     "voterShares": {},
+    "valuation": 400,
   })
 ];

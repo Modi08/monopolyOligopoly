@@ -313,7 +313,7 @@ class ViewSquareCard extends StatelessWidget {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: buildBottomButtons(
-            [buyPropertyFunction, payTaxFunction, collectFunction, goToJail],
+            [buyPropertyFunction, collectFunction, payTaxFunction,  goToJail],
             context,
             theme,
           ),
