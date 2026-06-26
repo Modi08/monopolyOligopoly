@@ -37,15 +37,23 @@ class Player {
       'cash': cash,
       'netWorth': netWorth,
       'propertiesOwnershipShares': isDatabase
-          ? propertiesOwnershipShares.toString()
+          ? jsonEncode(
+              propertiesOwnershipShares.map(
+                (k, v) => MapEntry(k.toString(), v),
+              ),
+            )
           : propertiesOwnershipShares,
       'propertiesVoterShares': isDatabase
-          ? propertiesVoterShares.toString()
+          ? jsonEncode(
+              propertiesVoterShares.map((k, v) => MapEntry(k.toString(), v)),
+            )
           : propertiesVoterShares,
       'position': position,
       'inJail': isDatabase ? inJail.toString() : inJail,
       'jailTurns': jailTurns,
-      'activeLoans': isDatabase ? activeLoans.toString() : activeLoans,
+      'activeLoans': isDatabase
+          ? activeLoans.map((k, v) => MapEntry(k.toString(), v))
+          : activeLoans,
       'playerTurn': playerTurn,
       'isCurrentPlayer': isDatabase
           ? isCurrentPlayer.toString()
@@ -147,13 +155,15 @@ class Property extends Square {
 
     map.addAll({
       'price': price,
-      'rent': isDatabase ? rent.toString() : rent,
+      'rent': isDatabase ? jsonEncode(rent) : rent,
       'houseCost': houseCost,
       'houses': houses,
       'ownershipShares': isDatabase
-          ? ownershipShares.toString()
+          ? jsonEncode(ownershipShares.map((k, v) => MapEntry(k.toString(), v)))
           : ownershipShares,
-      'voterShares': isDatabase ? voterShares.toString() : voterShares,
+      'voterShares': isDatabase
+          ? jsonEncode(voterShares.map((k, v) => MapEntry(k.toString(), v)))
+          : voterShares,
     });
 
     return map;

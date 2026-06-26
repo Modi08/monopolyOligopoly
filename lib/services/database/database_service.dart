@@ -1,3 +1,4 @@
+import 'package:flutter/rendering.dart';
 import 'package:sqflite/sqflite.dart';
 import 'package:path/path.dart';
 import 'models.dart';
@@ -86,6 +87,7 @@ class DatabaseService {
     final maps = await db.query('players', where: 'id = ?', whereArgs: [id]);
 
     if (maps.isNotEmpty) {
+      debugPrint(maps.first.toString());
       return Player.fromMap(maps.first);
     } else {
       return null;

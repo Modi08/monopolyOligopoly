@@ -106,10 +106,6 @@ class GameClient {
             cash - boughtProperty["price"],
           );
         });
-
-        database.getPlayer(playerId).then((player) {
-          debugPrint(player!.toMap().toString());
-        });
         break;
     }
   }
