@@ -75,6 +75,7 @@ class DatabaseService {
 
   Future<int> insertPlayer(Player player) async {
     final db = await instance.database;
+    debugPrint("${player.toMap(isDatabase: true)["propertiesOwnershipShares"].runtimeType}");
     return await db.insert(
       'players',
       player.toMap(isDatabase: true),

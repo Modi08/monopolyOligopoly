@@ -52,7 +52,11 @@ class ViewSquareCard extends StatelessWidget {
         "cash",
         currentPlayer.cash - boughtProperty["price"],
       );
+      
       currentPlayer.cash = currentPlayer.cash - boughtProperty["price"] as int;
+      currentPlayer.propertiesOwnershipShares[square.id] = 100;
+      currentPlayer.propertiesVoterShares[square.id] = 100;
+
       boughtProperty.remove("id");
 
       boughtProperty["ownershipShares"] = {currentPlayer.id.toString(): 100};
@@ -161,7 +165,7 @@ class ViewSquareCard extends StatelessWidget {
   Widget buildContinueButtonText(Square currentSquare, ThemeData currentTheme) {
     if ([1, 5, 6].contains(square.type)) {
       return Text(
-        "Buy Property for \$${(square as Property).price}",
+        "Buy \$${(square as Property).price}",
         style: currentTheme.textTheme.bodyLarge!.copyWith(
           color: Colors.black,
           fontWeight: FontWeight.bold,
@@ -214,16 +218,42 @@ class ViewSquareCard extends StatelessWidget {
             functionsLists[0](context, null);
             onFinish();
           },
-          style: currentTheme.elevatedButtonTheme.style,
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+              if (states.contains(WidgetState.pressed)) {
+                return currentTheme
+                    .colorScheme
+                    .inversePrimary; // Brighter color on hover
+              }
+              return currentTheme.colorScheme.primary;
+            }),
+            padding: WidgetStateProperty.all(
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            ),
+            shape: WidgetStateProperty.all(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+            ),
+          ),
           child: buildContinueButtonText(square, currentTheme),
         ),
         ElevatedButton(
           onPressed: () {
             onFinish();
           },
-          style: currentTheme.elevatedButtonTheme.style!.copyWith(
-            backgroundColor: WidgetStateProperty.all(
-              currentTheme.colorScheme.error,
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+              if (states.contains(WidgetState.pressed)) {
+                return currentTheme
+                    .colorScheme
+                    .inversePrimary;
+              }
+              return currentTheme.colorScheme.error;
+            }),
+            padding: WidgetStateProperty.all(
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            ),
+            shape: WidgetStateProperty.all(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
           ),
           child: Text(
@@ -238,13 +268,24 @@ class ViewSquareCard extends StatelessWidget {
           onPressed: () {
             debugPrint("To be implimented");
           },
-          style: currentTheme.elevatedButtonTheme.style!.copyWith(
-            backgroundColor: WidgetStateProperty.all(
-              currentTheme.colorScheme.inversePrimary,
+          style: ButtonStyle(
+            backgroundColor: WidgetStateProperty.resolveWith<Color>((states) {
+              if (states.contains(WidgetState.pressed)) {
+                return currentTheme
+                    .colorScheme
+                    .primary;
+              }
+              return currentTheme.colorScheme.inversePrimary;
+            }),
+            padding: WidgetStateProperty.all(
+              const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+            ),
+            shape: WidgetStateProperty.all(
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
             ),
           ),
           child: Text(
-            "Apply for a loan",
+            "Loan",
             style: currentTheme.textTheme.bodyLarge!.copyWith(
               color: Colors.black,
               fontWeight: FontWeight.bold,
@@ -312,8 +353,9 @@ class ViewSquareCard extends StatelessWidget {
         buildBoardSquareDisplay(square),
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
+          spacing: width * 0.05,
           children: buildBottomButtons(
-            [buyPropertyFunction, collectFunction, payTaxFunction,  goToJail],
+            [buyPropertyFunction, collectFunction, payTaxFunction, goToJail],
             context,
             theme,
           ),

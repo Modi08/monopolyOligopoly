@@ -79,7 +79,7 @@ class _DashboardState extends State<Dashboard> {
                   Text(
                     "Welcome, ${widget.currentPlayer.name}",
                     style: theme.textTheme.bodyLarge!.copyWith(
-                      fontSize: 30,
+                      fontSize: 29,
                       fontWeight: FontWeight.bold,
                     ),
                   ),

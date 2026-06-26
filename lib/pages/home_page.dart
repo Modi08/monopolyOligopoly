@@ -58,21 +58,23 @@ class _HomePageState extends State<HomePage> {
     const AccountActions(),
   ];
 
-  int calulateNetWorth() {
-    int valuation = widget.currentPlayer.cash;
+  Future<int> calulateNetWorth() async {
+    double netWorth = widget.currentPlayer.cash.toDouble();
+    debugPrint(widget.currentPlayer.propertiesOwnershipShares.toString());
     for (var entry in widget.currentPlayer.propertiesOwnershipShares.entries) {
-      widget.database.getParamofProperty(entry.key, "valuation").then((
-        valuationP,
-      ) {
-        valuation = valuationP * entry.value * 0.75;
-        valuation =
-            valuationP *
-            widget.currentPlayer.propertiesVoterShares[entry.key] *
-            0.25;
-      });
+      final valuationP = await widget.database.getParamofProperty(
+        entry.key,
+        "valuation",
+      );
+
+      netWorth +=
+          valuationP * (entry.value / 100) * 0.75 +
+          valuationP *
+              (widget.currentPlayer.propertiesVoterShares[entry.key]! / 100) *
+              0.25;
     }
 
-    return valuation;
+    return netWorth.round();
   }
 
   void onScreenSelected(int index) {
@@ -83,6 +85,7 @@ class _HomePageState extends State<HomePage> {
 
   void listentoPlayerStream(int gameId, Player currentPlayer) {
     debugPrint("listening to Player Stream");
+    listentoPropertyStream(widget.gameId);
     widget.firestoreInstance
         .collection(gameId.toString())
         .doc("players")
@@ -96,8 +99,9 @@ class _HomePageState extends State<HomePage> {
           Map<String, dynamic> rawPlayersSnapshot =
               snapshot.data() as Map<String, dynamic>;
 
-          debugPrint(rawPlayersSnapshot.toString());
-
+          debugPrint(
+            "============================================================",
+          );
           for (var index in rawPlayersSnapshot.keys.toList()) {
             Map<String, dynamic> rawPlayerData = Map<String, dynamic>.from(
               rawPlayersSnapshot.values.toList()[int.parse(index) - 1],
@@ -106,8 +110,18 @@ class _HomePageState extends State<HomePage> {
             rawPlayerData["id"] = int.parse(index);
             rawPlayerData["isCurrentPlayer"] =
                 int.parse(index) == currentPlayer.id;
+            if (currentPlayer.id == int.parse(index)) {
+              currentPlayer = Player.fromMap(rawPlayerData);
+            }
+            debugPrint(rawPlayerData.toString());
+            debugPrint(
+              "============================================================",
+            );
             widget.database.insertPlayer(Player.fromMap(rawPlayerData));
           }
+          debugPrint(
+            "============================================================",
+          );
 
           debugPrint("Stopped listening to Player Stream");
           return;
@@ -130,13 +144,26 @@ class _HomePageState extends State<HomePage> {
           Map<String, dynamic> rawPropertiesSnapshot =
               snapshot.data() as Map<String, dynamic>;
 
+          debugPrint(
+            "P============================================================1",
+          );
+          int count = 0;
           for (var index in rawPropertiesSnapshot.keys.toList()) {
             Map<String, dynamic> rawPropertyData = Map<String, dynamic>.from(
-              rawPropertiesSnapshot.values.toList()[int.parse(index) - 1],
+              rawPropertiesSnapshot.values.toList()[count],
             );
+            count += 1;
+            rawPropertyData["id"] = int.parse(index);
 
+            debugPrint(rawPropertyData.toString());
+            debugPrint(
+              "P============================================================2",
+            );
             widget.database.insertProperty(Property.fromMap(rawPropertyData));
           }
+          debugPrint(
+            "P============================================================3",
+          );
 
           debugPrint("Stopped listening to Property Stream");
           return;
@@ -251,6 +278,7 @@ class _HomePageState extends State<HomePage> {
     if (socketClient.userData.value != null) {
       onSocketDataReceived();
     }
+
     listentoPlayerStream(widget.gameId, widget.currentPlayer);
   }
 
@@ -292,7 +320,7 @@ class _HomePageState extends State<HomePage> {
       }
     }
 
-    widget.currentPlayer.netWorth = calulateNetWorth();
+    calulateNetWorth().then((net) => widget.currentPlayer.netWorth = net);
 
     final theme = Theme.of(context);
     debugPrint(
