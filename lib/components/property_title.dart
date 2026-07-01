@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:monopolyoligarch/constants/monoployboard.dart';
+import 'package:monopolyoligarch/services/stringprocessing.dart';
 
 class PropertyTitle extends StatelessWidget {
   const PropertyTitle({
@@ -40,7 +41,7 @@ class PropertyTitle extends StatelessWidget {
               properties[propertyId].name,
               style: theme.textTheme.bodyLarge!.copyWith(
                 fontWeight: FontWeight.bold,
-                color: Colors.black,
+                color: getTextColor(Color(properties[propertyId].color)),
               ),
             ),
           );

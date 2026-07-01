@@ -1,3 +1,5 @@
+import 'package:flutter/material.dart';
+
 Map<String, dynamic> parseStringToMap(String input) {
   Map<String, dynamic> resultMap = {};
 
@@ -34,12 +36,16 @@ Map<String, dynamic> parseStringToMap(String input) {
 }
 
 Map<int, int> processRawMap(
-    Map<String, dynamic> rawMap, {
-    bool isValueDynamic = false,
-  }) {
-    return rawMap.map((key, value) {
-      return isValueDynamic
-          ? MapEntry(int.parse(key), value as int)
-          : MapEntry(int.parse(key), value as dynamic);
-    });
-  }
+  Map<String, dynamic> rawMap, {
+  bool isValueDynamic = false,
+}) {
+  return rawMap.map((key, value) {
+    return isValueDynamic
+        ? MapEntry(int.parse(key), value as int)
+        : MapEntry(int.parse(key), value as dynamic);
+  });
+}
+
+Color getTextColor(Color bgColor) {
+  return bgColor.computeLuminance() > 0.5 ? Colors.black : Colors.white;
+}

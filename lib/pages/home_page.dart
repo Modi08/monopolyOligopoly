@@ -54,6 +54,7 @@ class _HomePageState extends State<HomePage> {
       height: widget.height,
       width: widget.width,
       currentPlayer: widget.currentPlayer,
+      database: widget.database,
     ),
     const AccountActions(),
   ];

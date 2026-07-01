@@ -20,6 +20,7 @@ class AppTheme {
   static const Color textFlare = Color(
     0xFFFFC107,
   ); // to highlight important text (e.g. "Go", "Free Parking")
+  static const Color accentColor = Colors.blue;
   static const Color successGreen = Color(
     0xFF4CAF50,
   ); // Positive actions (Buy, Pass Go)
@@ -33,6 +34,8 @@ class AppTheme {
       scaffoldBackgroundColor: primaryBackground,
       primaryColor: primaryColor,
       cardColor: secondaryBackground,
+      hintColor: textPrimary,
+      focusColor: accentColor,
 
       // Color Scheme
       colorScheme: const ColorScheme.dark(

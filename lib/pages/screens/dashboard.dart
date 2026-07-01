@@ -1,44 +1,94 @@
 import 'package:flutter/material.dart';
 import 'package:monopolyoligarch/components/actioncards.dart';
 import 'package:monopolyoligarch/components/avatarcirclecard.dart';
+import 'package:monopolyoligarch/components/playerselectionpopup.dart';
+import 'package:monopolyoligarch/pages/screens/trade_screen.dart';
+import 'package:monopolyoligarch/services/database/database_service.dart';
 import 'package:monopolyoligarch/services/database/models.dart';
 
 class Dashboard extends StatefulWidget {
   final double width;
   final double height;
   final Player currentPlayer;
+  final DatabaseService database;
   const Dashboard({
     super.key,
     required this.width,
     required this.height,
     required this.currentPlayer,
+    required this.database,
   });
 
   @override
   State<Dashboard> createState() => _DashboardState();
 }
 
-void transferCash() {
+void transferCash(
+  BuildContext context,
+  DatabaseService database,
+  Player currentPlayer,
+) {
   debugPrint("Transfer Cash");
 }
 
-void issueLoan() {
+void issueLoan(
+  BuildContext context,
+  DatabaseService database,
+  Player currentPlayer,
+) {
   debugPrint("Issue Loan");
 }
 
-void requestLoan() {
+void requestLoan(
+  BuildContext context,
+  DatabaseService database,
+  Player currentPlayer,
+) {
   debugPrint("Request Loan");
 }
 
-void issueDiscountTokens() {
+void issueDiscountTokens(
+  BuildContext context,
+  DatabaseService database,
+  Player currentPlayer,
+) {
   debugPrint("issueDiscountTokens");
 }
 
-void startTrade() {
+void startTrade(
+  BuildContext context,
+  DatabaseService database,
+  Player currentPlayer,
+) {
   debugPrint("Trade Started");
+  database.getAllPlayers().then((allPlayers) {
+    showDialog(
+      context: context,
+      builder: (context) => PlayerSelectionDialog(
+        allPlayers: allPlayers,
+        currentPlayer: currentPlayer,
+        onPlayerSelected: (Player player) {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TradeLedgerScreen(
+                currentPlayer: currentPlayer,
+                targetPlayer: player,
+                width: MediaQuery.of(context).size.width,
+              ),
+            ),
+          );
+        },
+      ),
+    );
+  });
 }
 
-void rentOut() {
+void rentOut(
+  BuildContext context,
+  DatabaseService database,
+  Player currentPlayer,
+) {
   debugPrint("Rented Out");
 }
 
@@ -191,6 +241,8 @@ class _DashboardState extends State<Dashboard> {
                   iconSymbol: actionsLists[index][0],
                   action: actionsLists[index][1],
                   actionFunction: actionsLists[index][2],
+                  database: widget.database,
+                  currentPlayer: widget.currentPlayer,
                 );
               },
             ),

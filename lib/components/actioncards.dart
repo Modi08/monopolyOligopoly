@@ -1,25 +1,30 @@
 import 'package:flutter/material.dart';
+import 'package:monopolyoligarch/services/database/database_service.dart';
+import 'package:monopolyoligarch/services/database/models.dart';
 
 class ActionCard extends StatelessWidget {
   final double width;
   final IconData iconSymbol;
   final String action;
-  final VoidCallback actionFunction;
+  final DatabaseService database;
+  final Player currentPlayer;
+  final Function(BuildContext, DatabaseService, Player) actionFunction;
   const ActionCard({
     super.key,
     required this.width,
     required this.iconSymbol,
     required this.action,
+    required this.database, 
     required this.actionFunction,
+    required this.currentPlayer
   });
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     return GestureDetector(
-      
       onTap: () {
-        actionFunction();
+        actionFunction(context, database, currentPlayer);
       },
       child: Container(
         height: width * 0.15,
@@ -32,7 +37,7 @@ class ActionCard extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(iconSymbol, color: theme.primaryColor, size: 35,),
+            Icon(iconSymbol, color: theme.primaryColor, size: 35),
             Text(
               action,
               style: theme.textTheme.bodyMedium!.copyWith(
